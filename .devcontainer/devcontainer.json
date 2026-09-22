@@ -1,0 +1,84 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.234.0/containers/kubernetes-helm-minikube
+{
+    "name": "opentelemetry-operator-demo",
+    "build": {
+        "dockerfile": "Dockerfile",
+        // Update 'VARIANT' to pick an Debian version: bullseye, buster
+        // Use bullseye on local arm64/Apple Silicon.
+        "args": {
+            "VARIANT": "trixie",
+            "USERNAME": "vscode"
+        }
+    },
+    "mounts": [
+        "source=/run/user/1000/podman/podman.sock,target=/run/user/1000/podman/podman.sock,type=bind",
+        "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
+    ],
+    "containerEnv": {
+        "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+        "KIND_EXPERIMENTAL_PROVIDER": "podman",
+        "CONTAINER_HOST": "unix:///run/user/1000/podman/podman.sock",
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+    },
+    "customizations": {
+        "vscode": {
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "dev.containers.dockerPath": "podman",
+                "dev.containers.dockerComposePath": "podman-compose",
+                "dev.containers.mountWaylandSocket": false,               
+                "dev.containers.copyGitConfig": true,
+                "dev.containers.dockerCredentialHelper": true,
+                "dev.containers.githubCLILoginWithToken": true,
+                "terminal.integrated.enableImages": true,
+                "terminal.integrated.fontLigatures.enabled": true
+            },
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "github.vscode-github-actions",
+                "github.vscode-pull-request-github",
+                "davidAnson.vscode-markdownlint",
+                "gitHub.copilot",
+                "github.copilot-chat",
+                "gruntfuggly.todo-tree",
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "redhat.vscode-yaml"
+            ]
+        }
+    },
+    // See: https://containers.dev/features
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        },
+        "ghcr.io/dhoeric/features/k9s:1": {
+            "version": "latest"
+        },
+        "ghcr.io/mpriscella/features/kind:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+            "version": "latest",
+            "minikube": "none"
+        },
+        "ghcr.io/guiyomh/features/just:0": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/node:2": {
+            "version": "lts"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "latest"
+        },
+        "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
+            "version": "latest"
+        }
+    },
+    "overrideCommand": false,
+    "runArgs": [
+        "--security-opt",
+        "label=disable",
+        "--userns=keep-id"
+    ]
+}
