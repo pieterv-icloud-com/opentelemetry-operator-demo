@@ -12,22 +12,15 @@
         }
     },
     "mounts": [
-        "source=/run/user/1000/podman/podman.sock,target=/run/user/1000/podman/podman.sock,type=bind",
         "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
     ],
     "containerEnv": {
-        "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
-        "KIND_EXPERIMENTAL_PROVIDER": "podman",
-        "CONTAINER_HOST": "unix:///run/user/1000/podman/podman.sock",
-        "XDG_RUNTIME_DIR": "/run/user/1000"
+        "WORKSPACE_FOLDER": "${containerWorkspaceFolder}"
     },
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
-            "settings": {
-                "dev.containers.dockerPath": "podman",
-                "dev.containers.dockerComposePath": "podman-compose",
-                "dev.containers.mountWaylandSocket": false,               
+            "settings": {              
                 "dev.containers.copyGitConfig": true,
                 "dev.containers.dockerCredentialHelper": true,
                 "dev.containers.githubCLILoginWithToken": true,
@@ -39,16 +32,19 @@
                 "github.vscode-github-actions",
                 "github.vscode-pull-request-github",
                 "davidAnson.vscode-markdownlint",
-                "gitHub.copilot",
-                "github.copilot-chat",
                 "gruntfuggly.todo-tree",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
-                "redhat.vscode-yaml"
+                "redhat.vscode-yaml",
+                "bokuweb.vscode-ripgrep"
             ]
         }
     },
     // See: https://containers.dev/features
     "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "moby": "false",
+            "version": "latest"
+        },
         "ghcr.io/devcontainers/features/github-cli:1": {
             "version": "latest"
         },
@@ -68,17 +64,8 @@
         "ghcr.io/devcontainers/features/node:2": {
             "version": "lts"
         },
-        "ghcr.io/devcontainers/features/python:1": {
-            "version": "latest"
-        },
         "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
             "version": "latest"
         }
-    },
-    "overrideCommand": false,
-    "runArgs": [
-        "--security-opt",
-        "label=disable",
-        "--userns=keep-id"
-    ]
+    }
 }
