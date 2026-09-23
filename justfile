@@ -31,6 +31,7 @@ cluster-create: gh-auth
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
 
 # Delete the local kind cluster
+[env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [group('cluster')]
 cluster-delete:
     kind delete cluster --name "$CLUSTER_NAME"
