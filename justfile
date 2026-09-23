@@ -12,8 +12,7 @@ setup-helm:
 # Authenticate with GitHub CLI when no token is available
 [group('setup')]
 gh-auth:
-    gh auth token >/dev/null 2>&1 || gh auth login
-
+    gh auth token >/dev/null 2>&1 || gh auth login || gh auth setup-git
 # Create the local kind cluster
 [env("ENVIRONMENT", "local")]
 [env("BRANCH", `git branch --show-current`)]
@@ -28,7 +27,7 @@ cluster-create: gh-auth
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
     fi
-    
+
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
 
 # Delete the local kind cluster
