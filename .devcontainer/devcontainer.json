@@ -48,7 +48,7 @@
     },
     // See: https://containers.dev/features
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+        "ghcr.io/devcontainers/features/docker-in-docker:4": {
             "moby": "false",
             "version": "latest"
         },
@@ -67,9 +67,6 @@
         },
         "ghcr.io/guiyomh/features/just:0": {
             "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/node:2": {
-            "version": "lts"
         },
         "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
             "version": "latest"
