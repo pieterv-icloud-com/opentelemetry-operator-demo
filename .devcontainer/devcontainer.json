@@ -25,17 +25,24 @@
                 "dev.containers.dockerCredentialHelper": true,
                 "dev.containers.githubCLILoginWithToken": true,
                 "terminal.integrated.enableImages": true,
-                "terminal.integrated.fontLigatures.enabled": true
+                "terminal.integrated.fontLigatures.enabled": true,
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash"
+                    },
+                    "zsh": {
+                        "path": "/bin/zsh"
+                    }
+                }
             },
             // Add the IDs of extensions you want installed when the container is created.
             "extensions": [
                 "github.vscode-github-actions",
                 "github.vscode-pull-request-github",
                 "davidAnson.vscode-markdownlint",
-                "gruntfuggly.todo-tree",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
-                "redhat.vscode-yaml",
-                "bokuweb.vscode-ripgrep"
+                "redhat.vscode-yaml"
             ]
         }
     },
@@ -67,5 +74,6 @@
         "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
             "version": "latest"
         }
-    }
+    },
+    "postCreateCommand": ".devcontainer/postcreate.sh"
 }
