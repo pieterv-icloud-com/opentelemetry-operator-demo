@@ -42,6 +42,7 @@
                 "github.vscode-pull-request-github",
                 "davidAnson.vscode-markdownlint",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "nefrob.vscode-just-syntax",
                 "redhat.vscode-yaml"
             ]
         }
