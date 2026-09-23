@@ -1,1 +1,2 @@
 .devcontainer/.*_history
+.devcontainer/devcontainer-lock.json
