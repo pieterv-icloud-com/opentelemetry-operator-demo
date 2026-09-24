@@ -20,8 +20,9 @@ spec:
   project: opentelemetry-operator-demo
   source:
     repoURL: https://github.com/pieterv-icloud-com/opentelemetry-operator-demo.git
-    targetRevision: #CLUSTER_BRANCH#
+    targetRevision: $CLUSTER_BRANCH
     path: environments/overlays/$CLUSTER_ENVIRONMENT
+  destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:

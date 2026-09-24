@@ -63,14 +63,14 @@ cluster-create: gh-auth cluster-delete
         --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
 
     mkdir -p "$tmpdir/bootstrap"
-    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT" "$tmpdir/bootstrap"
+    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap/"
     just _replace-tokens
 
     helm install argocd --create-namespace --namespace argocd argo/argo-cd
 
     kubectl apply -k $tmpdir/bootstrap
 
-    rm -rf $tmpdir/bootstrap
+    rm -rf "$tmpdir/bootstrap"
 
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
