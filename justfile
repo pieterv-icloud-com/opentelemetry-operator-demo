@@ -81,3 +81,23 @@ cluster-delete:
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
     fi
+
+# Open ArgoCD
+[group('cluster')]
+cluster-argocd:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    fuser -k 8080/tcp || echo "ArgoCD port wasn't open"
+
+    export ARGOCD_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode)
+    
+    echo "Username: admin"
+    echo "Password: ${ARGOCD_PASSWORD}"
+    
+    kubectl port-forward svc/argocd-server -n argocd 8080:443    
+
+# Open K9s
+[group('cluster')]
+cluster-k9s:
+    k9s --all-namespaces    
