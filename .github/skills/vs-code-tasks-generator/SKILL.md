@@ -1,6 +1,6 @@
 # VS Code Tasks Generator
 
-Generate workspace VS Code tasks for every recipe in the repository's
+Generate workspace VS Code tasks for every public recipe in the repository's
 `justfile`.
 
 ## Workflow
@@ -12,9 +12,9 @@ Generate workspace VS Code tasks for every recipe in the repository's
 	just --dump --dump-format json
 	```
 
-3. Read the `recipes` object from the JSON output and create a task for every
-	recipe. Use the recipe's `private` property to identify internal helpers;
-	do not infer visibility from the recipe name.
+3. Read the `recipes` object from the JSON output and create tasks only for
+	recipes whose `private` property is false. Never generate tasks for private
+	recipes; they are implementation helpers, not VS Code commands.
 4. Create or update `.vscode/tasks.json` using VS Code's `2.0.0` task schema.
 	Preserve unrelated existing tasks in that file, but replace the generated
 	`just:` tasks so rerunning the generator is idempotent.
@@ -26,6 +26,7 @@ Generate workspace VS Code tasks for every recipe in the repository's
 	  "type": "shell",
 	  "command": "just",
 	  "args": ["<recipe>"],
+	  "detail": "<recipe doc, when present>",
 	  "options": {
 		 "cwd": "${workspaceFolder}"
 	  },
@@ -41,8 +42,11 @@ Generate workspace VS Code tasks for every recipe in the repository's
 	}
 	```
 
-6. Add `"hide": true` to tasks for recipes whose `private` property is true.
-	Set the `group` to `"build"` only for the `default` recipe. Do not mark
+	Populate `detail` from the recipe's `doc` property in the `just` dump. If a
+	recipe has no documentation, omit `detail` rather than inventing a
+	description.
+
+6. Set the `group` to `"build"` only for the `default` recipe. Do not mark
 	cluster, authentication, port-forward, or delete recipes as default build
 	tasks.
 7. Keep the generated tasks in the same order as the `recipes` object in the
