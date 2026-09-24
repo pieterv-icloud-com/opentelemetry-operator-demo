@@ -1,64 +1,45 @@
-# VS Code Tasks Generator
+---
+name: vs-code-tasks-generator
+description: Generates .vscode/tasks.json entries from public justfile recipes, including recipe documentation and VS Code task settings. Use when creating or refreshing VS Code tasks for a just-based workspace.
+---
 
-Generate workspace VS Code tasks for every public recipe in the repository's
-`justfile`.
+# Generate VS Code Tasks
+
+Generate workspace tasks from the repository's `justfile`.
 
 ## Workflow
 
-1. Read the complete `justfile` before editing anything.
-2. Discover recipes and their metadata in source order with:
+1. Read the complete `justfile`.
+2. Read recipe metadata in declaration order:
 
-	```sh
-	just --dump --dump-format json
-	```
+   ```sh
+   just --dump --dump-format json
+   ```
 
-3. Read the `recipes` object from the JSON output and create tasks only for
-	recipes whose `private` property is false. Never generate tasks for private
-	recipes; they are implementation helpers, not VS Code commands.
-4. Create or update `.vscode/tasks.json` using VS Code's `2.0.0` task schema.
-	Preserve unrelated existing tasks in that file, but replace the generated
-	`just:` tasks so rerunning the generator is idempotent.
-5. Generate one task per recipe with this shape:
+3. From the dump's `recipes` object, include only recipes where `private` is
+   false and the name is not `default`.
+4. Create or update `.vscode/tasks.json` using schema version `2.0.0`.
+   Preserve unrelated tasks and replace only the generated recipe tasks so the
+   operation is idempotent.
+5. Generate one task per included recipe:
+   - `label`: recipe name
+   - `type`: `shell`
+   - `command`: `just`
+   - `args`: one item containing the recipe name
+   - `detail`: recipe `doc`, when non-empty
+   - `options.cwd`: `${workspaceFolder}`
+   - `presentation`: `echo: true`, `reveal: always`, `focus: true`,
+     `panel: dedicated`, `showReuseMessage: false`, `clear: true`
+   - `problemMatcher`: `[]`
 
-	```json
-	{
-	  "label": "just: <recipe>",
-	  "type": "shell",
-	  "command": "just",
-	  "args": ["<recipe>"],
-	  "detail": "<recipe doc, when present>",
-	  "options": {
-		 "cwd": "${workspaceFolder}"
-	  },
-    "presentation": {
-      "echo": true,
-      "reveal": "always",
-      "focus": true,
-      "panel": "dedicated",
-      "showReuseMessage": false,
-      "clear": true
-    },    
-	  "problemMatcher": []
-	}
-	```
+   Omit `detail` when the recipe has no documentation. Do not add a `group`.
 
-	Populate `detail` from the recipe's `doc` property in the `just` dump. If a
-	recipe has no documentation, omit `detail` rather than inventing a
-	description.
-
-6. Set the `group` to `"build"` only for the `default` recipe. Do not mark
-	cluster, authentication, port-forward, or delete recipes as default build
-	tasks.
-7. Keep the generated tasks in the same order as the `recipes` object in the
-	dump output.
-8. Validate the result by parsing `.vscode/tasks.json` as JSONC or JSON and by
-	checking that every generated task invokes `just` with exactly one recipe
-	argument.
-
-Use the VS Code task documentation for the supported schema and task properties:
-https://code.visualstudio.com/docs/debugtest/tasks
+6. Keep generated tasks in the same order as the dump's `recipes` object.
+7. Validate `.vscode/tasks.json` as JSON or JSONC. Confirm that every generated
+   task has a unique recipe label, invokes `just` with exactly one matching
+   argument, and excludes private and `default` recipes.
 
 Do not copy recipe bodies into `tasks.json`; `just` remains the source of truth
 for dependencies, environment variables, shell behavior, and multi-line
-commands. Do not use `just --summary` as the sole source because it omits
-private recipes.
+commands. Use the VS Code task documentation for schema details:
+https://code.visualstudio.com/docs/debugtest/tasks

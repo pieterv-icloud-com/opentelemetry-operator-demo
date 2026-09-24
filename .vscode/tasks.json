@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "just: cluster-argocd",
+      "label": "cluster-argocd",
       "type": "shell",
       "command": "just",
       "args": ["cluster-argocd"],
@@ -21,7 +21,7 @@
       "problemMatcher": []
     },
     {
-      "label": "just: cluster-create",
+      "label": "cluster-create",
       "type": "shell",
       "command": "just",
       "args": ["cluster-create"],
@@ -40,7 +40,7 @@
       "problemMatcher": []
     },
     {
-      "label": "just: cluster-delete",
+      "label": "cluster-delete",
       "type": "shell",
       "command": "just",
       "args": ["cluster-delete"],
@@ -59,7 +59,7 @@
       "problemMatcher": []
     },
     {
-      "label": "just: cluster-k9s",
+      "label": "cluster-k9s",
       "type": "shell",
       "command": "just",
       "args": ["cluster-k9s"],
@@ -78,26 +78,7 @@
       "problemMatcher": []
     },
     {
-      "label": "just: default",
-      "type": "shell",
-      "command": "just",
-      "args": ["default"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": [],
-      "group": "build"
-    },
-    {
-      "label": "just: gh-auth",
+      "label": "gh-auth",
       "type": "shell",
       "command": "just",
       "args": ["gh-auth"],
@@ -116,7 +97,7 @@
       "problemMatcher": []
     },
     {
-      "label": "just: setup-helm",
+      "label": "setup-helm",
       "type": "shell",
       "command": "just",
       "args": ["setup-helm"],
