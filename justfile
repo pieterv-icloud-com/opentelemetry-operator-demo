@@ -5,6 +5,7 @@ default:
 [group('setup')]
 setup-helm:
     helm repo add argo https://argoproj.github.io/argo-helm
+    helm repo add jetstack https://charts.jetstack.io
     helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
     helm repo update
