@@ -12,21 +12,23 @@ setup-helm:
 # Authenticate with GitHub CLI when no token is available
 [group('setup')]
 gh-auth:
-    gh auth token >/dev/null 2>&1 || gh auth login || gh auth setup-git
-# Create the local kind cluster
-[env("ENVIRONMENT", "local")]
-[env("BRANCH", `git branch --show-current`)]
-[env("CLUSTER_NAME", "opentelemetry-operator-demo")]
-[group('cluster')]
-cluster-create: gh-auth
     #!/usr/bin/env bash
 
-    export GITHUB_USER="$(gh api user --jq .login)"
-    export GITHUB_TOKEN="$(gh auth token)"
-
-    if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
-        kind delete cluster --name "$CLUSTER_NAME"
+    if ! gh auth status >/dev/null 2>&1; then
+        gh auth login
+        gh auth setup-git
     fi
+
+# Create the local kind cluster
+[env("CLUSTER_ENVIRONMENT", "local")]
+[env("CLUSTER_BRANCH", `git branch --show-current`)]
+[env("CLUSTER_NAME", "opentelemetry-operator-demo")]
+[group('cluster')]
+cluster-create: gh-auth cluster-delete
+    #!/usr/bin/env bash
+
+    export CLUSTER_GITHUB_USER="$(gh api user --jq .login)"
+    export CLUSTER_GITHUB_TOKEN="$(gh auth token)"
 
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
 
@@ -34,4 +36,8 @@ cluster-create: gh-auth
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [group('cluster')]
 cluster-delete:
-    kind delete cluster --name "$CLUSTER_NAME"
+    #!/usr/bin/env bash
+
+    if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
+        kind delete cluster --name "$CLUSTER_NAME"
+    fi
