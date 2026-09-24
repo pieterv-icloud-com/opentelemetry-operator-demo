@@ -19,6 +19,29 @@ gh-auth:
         gh auth setup-git
     fi
 
+# Generic token replacement
+_replace-tokens:
+    #!/usr/bin/env python3
+    import os
+    from pathlib import Path
+
+    bootstrap = Path(os.environ.get("TMPDIR", "/tmp")) / "bootstrap"
+    tokens = {
+        name: value
+        for name, value in os.environ.items()
+        if name.startswith("CLUSTER_")
+    }
+
+    for path in bootstrap.rglob("*"):
+        if path.is_file():
+            contents = path.read_bytes()
+            for name, value in tokens.items():
+                contents = contents.replace(
+                    f"${name}".encode(), value.encode()
+                )
+            path.write_bytes(contents)
+
+
 # Create the local kind cluster
 [env("CLUSTER_ENVIRONMENT", "local")]
 [env("CLUSTER_BRANCH", `git branch --show-current`)]
@@ -29,8 +52,13 @@ cluster-create: gh-auth cluster-delete
 
     export CLUSTER_GITHUB_USER="$(gh api user --jq .login)"
     export CLUSTER_GITHUB_TOKEN="$(gh auth token)"
+    tmpdir="${TMPDIR:-/tmp}"
 
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
+
+    mkdir -p "$tmpdir/bootstrap"
+    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap"
+    just _replace-tokens
 
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
