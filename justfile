@@ -56,9 +56,21 @@ cluster-create: gh-auth cluster-delete
 
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
 
+    # Kind writes 0.0.0.0 to kubeconfig; use the Docker gateway from this container.
+    kubeconfig_server="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
+    docker_gateway="$(ip route | awk '$1 == "default" {print $3; exit}')"
+    kubectl config set-cluster "kind-$CLUSTER_NAME" \
+        --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
+
     mkdir -p "$tmpdir/bootstrap"
-    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap"
+    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT" "$tmpdir/bootstrap"
     just _replace-tokens
+
+    helm install argocd --create-namespace --namespace argocd argo/argo-cd
+
+    kubectl apply -k $tmpdir/bootstrap
+
+    rm -rf $tmpdir/bootstrap
 
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
