@@ -74,5 +74,15 @@
             "version": "latest"
         }
     },
+    "forwardPorts": [
+        "localhost:8080"
+    ],
+    "portsAttributes": {
+        "3000": {
+            "label": "ArgoCD",
+            "protocol": "https",
+            "onAutoForward": "silent"
+        }
+    },
     "postCreateCommand": ".devcontainer/postcreate.sh"
 }
