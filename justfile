@@ -49,7 +49,7 @@ _replace-tokens:
 [env("CLUSTER_ENVIRONMENT", "local")]
 [env("CLUSTER_BRANCH", `git branch --show-current`)]
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
-[env("CLOUD_PROVIDER_KIND_IMAGE", "docker/desktop-cloud-provider-kind:v0.7.0")]
+[env("CLOUD_PROVIDER_KIND_IMAGE", "registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0")]
 [group('cluster')]
 cluster-create: gh-auth cluster-delete
     #!/usr/bin/env bash
@@ -80,7 +80,7 @@ cluster-create: gh-auth cluster-delete
 
 # Run cloud-provider-kind for the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
-[env("CLOUD_PROVIDER_KIND_IMAGE", "docker/desktop-cloud-provider-kind:v0.7.0")]
+[env("CLOUD_PROVIDER_KIND_IMAGE", "registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0")]
 [group('cluster')]
 cluster-provider:
     #!/usr/bin/env bash
