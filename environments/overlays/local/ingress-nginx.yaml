@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: spandigital.io
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    targetRevision: 4.15.1
+    chart: ingress-nginx
+    helm:
+      releaseName: ingress-nginx
+      values: |
+        controller:
+          replicaCount: 3
+          allowSnippetAnnotations: true
+          enableAnnotationValidations: false
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: ingress-nginx
+                  app.kubernetes.io/component: controller
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: ingress-nginx
+                        app.kubernetes.io/component: controller
+                    topologyKey: kubernetes.io/hostname
+          service:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
+              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+          config:
+            annotation-value-word-blocklist: "lua_package,_by_lua,eval,exec"
+            annotations-risk-level: "Critical"
+            enable-opentelemetry: "true"
+            opentelemetry-config: "/etc/nginx/opentelemetry.toml"
+            opentelemetry-operation-name: "HTTP $request_method $service_name $uri"
+            opentelemetry-trust-incoming-span: "true"
+            otlp-collector-host: "default-collector.observability.svc.cluster.local"
+            otlp-collector-port: "4317"
+            otel-max-queuesize: "2048"
+            otel-schedule-delay-millis: "5000"
+            otel-max-export-batch-size: "512"
+            otel-service-name: "nginx-proxy"
+            otel-sampler: "AlwaysOn" 
+            otel-sampler-ratio: "0.25"
+            otel-sampler-parent-based: "true"                
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+    - PruneLast=true
+    retry:
+      limit: -1

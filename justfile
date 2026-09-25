@@ -5,7 +5,9 @@ default:
 [group('setup')]
 setup-helm:
     helm repo add argo https://argoproj.github.io/argo-helm
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm repo add jetstack https://charts.jetstack.io
+    helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server
     helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
     helm repo update
