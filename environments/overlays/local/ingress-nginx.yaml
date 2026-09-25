@@ -15,36 +15,7 @@ spec:
       releaseName: ingress-nginx
       values: |
         controller:
-          allowSnippetAnnotations: true
-          enableAnnotationValidations: false
-          nodeSelector:
-            kubernetes.io/hostname: opentelemetry-operator-demo-worker
-          topologySpreadConstraints:
-            - maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: ingress-nginxd
-                  app.kubernetes.io/component: controller
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        app.kubernetes.io/name: ingress-nginx
-                        app.kubernetes.io/component: controller
-                    topologyKey: kubernetes.io/hostname
-          service:
-            type: NodePort
-            annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb
-              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
           config:
-            annotation-value-word-blocklist: "lua_package,_by_lua,eval,exec"
-            annotations-risk-level: "Critical"
             enable-opentelemetry: "true"
             opentelemetry-config: "/etc/nginx/opentelemetry.toml"
             opentelemetry-operation-name: "HTTP $request_method $service_name $uri"
