@@ -15,7 +15,6 @@ spec:
       releaseName: ingress-nginx
       values: |
         controller:
-          replicaCount: 3
           allowSnippetAnnotations: true
           enableAnnotationValidations: false
           topologySpreadConstraints:
