@@ -49,6 +49,7 @@ _replace-tokens:
 [env("CLUSTER_ENVIRONMENT", "local")]
 [env("CLUSTER_BRANCH", `git branch --show-current`)]
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
+[env("CLOUD_PROVIDER_KIND_IMAGE", "docker/desktop-cloud-provider-kind:v0.7.0")]
 [group('cluster')]
 cluster-create: gh-auth cluster-delete
     #!/usr/bin/env bash
@@ -58,6 +59,8 @@ cluster-create: gh-auth cluster-delete
     tmpdir="${TMPDIR:-/tmp}"
 
     kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
+
+    just cluster-provider
 
     # Kind writes 0.0.0.0 to kubeconfig; use the Docker gateway from this container.
     kubeconfig_server="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
@@ -75,11 +78,30 @@ cluster-create: gh-auth cluster-delete
 
     rm -rf "$tmpdir/bootstrap"
 
+# Run cloud-provider-kind for the local kind cluster
+[env("CLUSTER_NAME", "opentelemetry-operator-demo")]
+[env("CLOUD_PROVIDER_KIND_IMAGE", "docker/desktop-cloud-provider-kind:v0.7.0")]
+[group('cluster')]
+cluster-provider:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    provider_container="cloud-provider-kind-${CLUSTER_NAME}"
+    docker rm --force "$provider_container" >/dev/null 2>&1 || true
+    docker run --detach \
+        --rm \
+        --name "$provider_container" \
+        --network kind \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        "$CLOUD_PROVIDER_KIND_IMAGE"
+
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [group('cluster')]
 cluster-delete:
     #!/usr/bin/env bash
+
+    docker rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
 
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
