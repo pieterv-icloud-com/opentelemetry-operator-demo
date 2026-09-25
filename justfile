@@ -68,6 +68,9 @@ cluster-create: gh-auth cluster-delete
     kubectl config set-cluster "kind-$CLUSTER_NAME" \
         --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
 
+    # Attach this devcontainer to the kind network so LoadBalancer IPs are reachable directly.
+    docker network connect kind "$(hostname)" >/dev/null 2>&1 || true
+
     mkdir -p "$tmpdir/bootstrap"
     cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap/"
     just _replace-tokens
@@ -95,7 +98,8 @@ cluster-provider:
         --env KIND_EXPERIMENTAL_PROVIDER=docker \
         --env KIND_EXPERIMENTAL_DOCKER_NETWORK=kind \
         --volume /var/run/docker.sock:/var/run/docker.sock \
-        "$CLOUD_PROVIDER_KIND_IMAGE"
+        "$CLOUD_PROVIDER_KIND_IMAGE" \
+        --enable-lb-port-mapping
 
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
@@ -105,6 +109,7 @@ cluster-delete:
 
     docker rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
     docker ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r docker rm --force >/dev/null
+    docker network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
 
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
