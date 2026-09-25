@@ -92,6 +92,8 @@ cluster-provider:
         --rm \
         --name "$provider_container" \
         --network kind \
+        --env KIND_EXPERIMENTAL_PROVIDER=docker \
+        --env KIND_EXPERIMENTAL_DOCKER_NETWORK=kind \
         --volume /var/run/docker.sock:/var/run/docker.sock \
         "$CLOUD_PROVIDER_KIND_IMAGE"
 
@@ -102,6 +104,7 @@ cluster-delete:
     #!/usr/bin/env bash
 
     docker rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+    docker ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r docker rm --force >/dev/null
 
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
