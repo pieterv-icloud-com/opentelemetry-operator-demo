@@ -38,6 +38,7 @@ spec:
                         app.kubernetes.io/component: controller
                     topologyKey: kubernetes.io/hostname
           service:
+            type: NodePort
             annotations:
               service.beta.kubernetes.io/aws-load-balancer-type: nlb
               service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
