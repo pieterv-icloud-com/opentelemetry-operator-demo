@@ -97,10 +97,10 @@
       "problemMatcher": []
     },
     {
-      "label": "demo-flagd-ui",
+      "label": "cluster-flagd-ui",
       "type": "shell",
       "command": "just",
-      "args": ["demo-flagd-ui"],
+      "args": ["cluster-flagd-ui"],
       "detail": "Open the Flagd configurator at http://localhost:4000",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -116,10 +116,10 @@
       "problemMatcher": []
     },
     {
-      "label": "demo-grafana",
+      "label": "cluster-grafana",
       "type": "shell",
       "command": "just",
-      "args": ["demo-grafana"],
+      "args": ["cluster-grafana"],
       "detail": "Open Grafana at http://localhost:3000",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -135,10 +135,10 @@
       "problemMatcher": []
     },
     {
-      "label": "demo-jaeger",
+      "label": "cluster-jaeger",
       "type": "shell",
       "command": "just",
-      "args": ["demo-jaeger"],
+      "args": ["cluster-jaeger"],
       "detail": "Open Jaeger at http://localhost:16686",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -154,30 +154,11 @@
       "problemMatcher": []
     },
     {
-      "label": "demo-load-generator",
+      "label": "cluster-load-generator",
       "type": "shell",
       "command": "just",
-      "args": ["demo-load-generator"],
+      "args": ["cluster-load-generator"],
       "detail": "Open the Load Generator UI at http://localhost:8089",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "demo-store",
-      "type": "shell",
-      "command": "just",
-      "args": ["demo-store"],
-      "detail": "Open the Web store at http://localhost:8080",
       "options": {
         "cwd": "${workspaceFolder}"
       },

@@ -76,7 +76,6 @@
         }
     },
     "forwardPorts": [
-        "localhost:8080",
         "localhost:3000",
         "localhost:8089",
         "localhost:16686",
@@ -84,11 +83,6 @@
         "localhost:8082"
     ],
     "portsAttributes": {
-        "8080": {
-            "label": "Web Store",
-            "protocol": "http",
-            "onAutoForward": "silent"
-        },
         "3000": {
             "label": "Grafana",
             "protocol": "http",

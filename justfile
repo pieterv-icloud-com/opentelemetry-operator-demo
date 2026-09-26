@@ -130,29 +130,24 @@ cluster-argocd:
     
     kubectl port-forward svc/argocd-server -n argocd 8082:443
 
-# Open the Web store at http://localhost:8080
-[group('cluster')]
-demo-store:
-    kubectl --namespace otel-demo port-forward svc/frontend-proxy 8080:8080
-
 # Open Grafana at http://localhost:3000
 [group('cluster')]
-demo-grafana:
+cluster-grafana:
     kubectl --namespace otel-demo port-forward svc/grafana 3000:80
 
 # Open the Load Generator UI at http://localhost:8089
 [group('cluster')]
-demo-load-generator:
+cluster-load-generator:
     kubectl --namespace otel-demo port-forward svc/load-generator 8089:8089
 
 # Open Jaeger at http://localhost:16686
 [group('cluster')]
-demo-jaeger:
+cluster-jaeger:
     kubectl --namespace otel-demo port-forward svc/jaeger 16686:16686
 
 # Open the Flagd configurator at http://localhost:4000
 [group('cluster')]
-demo-flagd-ui:
+cluster-flagd-ui:
     kubectl --namespace otel-demo port-forward svc/flagd 4000:4000
 
 # Open K9s
