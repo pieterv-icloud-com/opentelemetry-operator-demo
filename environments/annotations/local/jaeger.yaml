@@ -1,0 +1,57 @@
+# Jaeger V2 instance running via OpenTelemetry Operator
+# See: https://github.com/jaegertracing/jaeger-operator#jaeger-v2-operator
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: jaeger
+  namespace: observability
+spec:
+  image: jaegertracing/jaeger:latest
+  ports:
+    - name: jaeger-ui
+      port: 16686
+  config:
+    extensions:
+      jaeger_storage:
+        backends:
+          memstore:
+            memory:
+              max_traces: 100000
+        metric_backends:
+          prometheus_metrics:
+            prometheus:
+              endpoint: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+              normalize_calls: true
+              normalize_duration: true
+      jaeger_query:
+        storage:
+          traces: memstore
+          metrics: prometheus_metrics
+        base_path: /
+        ui:
+          log_access: true
+        http:
+          endpoint: 0.0.0.0:16686
+        grpc:
+          endpoint: 0.0.0.0:16685
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    exporters:
+      jaeger_storage_exporter:
+        trace_storage: memstore
+    service:
+      extensions: [jaeger_storage, jaeger_query]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          exporters: [jaeger_storage_exporter]
+      telemetry:
+        logs:
+          level: info
+        metrics: {}
+  replicas: 1
