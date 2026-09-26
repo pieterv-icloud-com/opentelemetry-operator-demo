@@ -1,5 +1,6 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "kubectl apply": true
+        "kubectl apply": true,
+        "kubectl get": true
     }
 }

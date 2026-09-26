@@ -78,6 +78,120 @@
       "problemMatcher": []
     },
     {
+      "label": "cluster-provider",
+      "type": "shell",
+      "command": "just",
+      "args": ["cluster-provider"],
+      "detail": "Run cloud-provider-kind for the local kind cluster",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "demo-flagd-ui",
+      "type": "shell",
+      "command": "just",
+      "args": ["demo-flagd-ui"],
+      "detail": "Open the Flagd configurator at http://localhost:4000",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "demo-grafana",
+      "type": "shell",
+      "command": "just",
+      "args": ["demo-grafana"],
+      "detail": "Open Grafana at http://localhost:3000",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "demo-jaeger",
+      "type": "shell",
+      "command": "just",
+      "args": ["demo-jaeger"],
+      "detail": "Open Jaeger at http://localhost:16686",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "demo-load-generator",
+      "type": "shell",
+      "command": "just",
+      "args": ["demo-load-generator"],
+      "detail": "Open the Load Generator UI at http://localhost:8089",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "demo-store",
+      "type": "shell",
+      "command": "just",
+      "args": ["demo-store"],
+      "detail": "Open the Web store at http://localhost:8080",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "gh-auth",
       "type": "shell",
       "command": "just",

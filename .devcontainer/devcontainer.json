@@ -40,6 +40,7 @@
                 "github.vscode-github-actions",
                 "github.vscode-pull-request-github",
                 "davidAnson.vscode-markdownlint",
+                "ms-azuretools.vscode-containers",
                 "ms-kubernetes-tools.vscode-kubernetes-tools",
                 "redhat.vscode-yaml"
             ]
@@ -75,10 +76,40 @@
         }
     },
     "forwardPorts": [
-        "localhost:8080"
+        "localhost:8080",
+        "localhost:3000",
+        "localhost:8089",
+        "localhost:16686",
+        "localhost:4000",
+        "localhost:8082"
     ],
     "portsAttributes": {
         "8080": {
+            "label": "Web Store",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "3000": {
+            "label": "Grafana",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "8089": {
+            "label": "Load Generator",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "16686": {
+            "label": "Jaeger",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "4000": {
+            "label": "Flagd Configurator",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "8082": {
             "label": "ArgoCD",
             "protocol": "https",
             "onAutoForward": "silent"
