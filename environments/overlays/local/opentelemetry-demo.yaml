@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opentelemetry-demo
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: opentelemetry-operator-demo
+  source:
+    repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+    targetRevision: 0.42.0
+    chart: opentelemetry-demo
+    helm:
+      releaseName: opentelemetry-demo
+      values: |
+        components:
+          frontend-proxy:
+            ingress:
+              enabled: true
+              ingressClassName: nginx
+              hosts:
+                - host: otel-demo.local
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      port: 8080
+          frontend:
+            envOverrides:
+              - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                value: http://otel-demo.local/otlp-http/v1/traces
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: otel-demo
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - PruneLast=true
+    retry:
+      limit: -1

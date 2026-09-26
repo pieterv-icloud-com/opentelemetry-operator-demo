@@ -4,4 +4,5 @@ resources:
   - cert-manager.yaml
   - ingress-nginx.yaml
   - opentelemetry-operator.yaml
+  - opentelemetry-demo.yaml
   - metrics-server.yaml
