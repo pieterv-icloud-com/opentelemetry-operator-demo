@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: opentelemetry-operator-demo
+  source:
+    chart: loki
+    repoURL: https://grafana-community.github.io/helm-charts
+    targetRevision: 17.2.0
+    helm:
+      releaseName: loki
+      values: |
+        loki:
+          auth_enabled: false
+          commonConfig:
+            path_prefix: /var/loki
+            replication_factor: 1
+          schemaConfig:
+            configs:
+              - from: 2024-01-01
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: loki_index_
+                  period: 24h
+          storage:
+            type: filesystem
+          limits_config:
+            reject_old_samples: true
+            reject_old_samples_max_age: 168h
+            ingestion_rate_mb: 32
+            ingestion_burst_size_mb: 48
+            max_streams_per_user: 10000
+            max_line_size: 256kb
+            max_entries_limit_per_query: 5000
+            max_query_series: 500
+        deploymentMode: Monolithic
+        singleBinary:
+          replicas: 1
+          persistence:
+            enabled: true
+            size: 100Gi
+            storageClass: standard
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        gateway:
+          enabled: true
+          replicas: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          service:
+            type: ClusterIP
+            port: 80
+        minio:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+      - PruneLast=true
+    retry:
+      limit: -1
