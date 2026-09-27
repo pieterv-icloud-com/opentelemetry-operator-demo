@@ -303,8 +303,7 @@ spec:
         auth_type: serviceAccount
         collection_interval: 20s
         endpoint: ${env:K8S_NODE_IP}:10250
-        tls:
-          insecure_skip_verify: true
+        insecure_skip_verify: true
       otlp:
         protocols:
           grpc:
