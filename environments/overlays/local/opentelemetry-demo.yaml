@@ -20,6 +20,8 @@ spec:
               value: opentelemetry-collector-collector.observability.svc.cluster.local
         opentelemetry-collector:
           enabled: false
+        jaeger:
+          enabled: false
         components:
           frontend-proxy:
             ingress:
