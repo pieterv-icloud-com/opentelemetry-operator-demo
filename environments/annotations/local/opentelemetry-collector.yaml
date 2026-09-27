@@ -102,7 +102,7 @@ spec:
         tls:
           insecure: true
       otlp_grpc/jaeger:
-        endpoint: jaeger.observability.svc.cluster.local:4317
+        endpoint: jaeger-collector.observability.svc.cluster.local:4317
         sending_queue:
           batch: {}
         tls:
