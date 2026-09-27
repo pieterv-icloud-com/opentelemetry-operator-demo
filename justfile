@@ -143,7 +143,12 @@ cluster-load-generator:
 # Open Jaeger at http://localhost:16686
 [group('cluster')]
 cluster-jaeger:
-    kubectl --namespace otel-demo port-forward svc/jaeger 16686:16686
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    fuser -k 16686/tcp || echo "Jaeger port wasn't open"
+
+    kubectl --namespace observability port-forward svc/jaeger-collector 16686:16686
 
 # Open the Flagd configurator at http://localhost:4000
 [group('cluster')]

@@ -14,6 +14,12 @@ spec:
     helm:
       releaseName: opentelemetry-demo
       values: |
+        default:
+          envOverrides:
+            - name: OTEL_COLLECTOR_NAME
+              value: otel-collector.observability.svc.cluster.local
+        opentelemetry-collector:
+          enabled: false
         components:
           frontend-proxy:
             ingress:
