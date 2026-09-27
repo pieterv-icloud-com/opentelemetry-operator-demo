@@ -46,6 +46,7 @@ spec:
   resources:
     limits:
       memory: 400Mi
+  serviceAccount: opentelemetry-collector      
   volumes:
     - name: hostfs
       hostPath:
