@@ -303,6 +303,8 @@ spec:
         auth_type: serviceAccount
         collection_interval: 20s
         endpoint: ${env:K8S_NODE_IP}:10250
+        tls:
+          insecure_skip_verify: true
       otlp:
         protocols:
           grpc:
@@ -369,7 +371,7 @@ spec:
             - batch:
                 exporter:
                   otlp:
-                    endpoint: http://otel-collector.observability.svc.cluster.local:4318
+                    endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318
                     insecure: true
                     protocol: http/protobuf
         metrics:
@@ -378,7 +380,7 @@ spec:
             - periodic:
                 exporter:
                   otlp:
-                    endpoint: http://otel-collector.observability.svc.cluster.local:4318
+                    endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318
                     insecure: true
                     protocol: http/protobuf
                 interval: 10000
