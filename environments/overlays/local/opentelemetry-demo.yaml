@@ -42,7 +42,7 @@ spec:
               - name: KAFKA_ADVERTISED_LISTENERS
                 value: PLAINTEXT://kafka.otel-demo.svc.cluster.local:9092
           opamp-server:
-            enabled: true
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: otel-demo
