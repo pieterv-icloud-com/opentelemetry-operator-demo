@@ -3,6 +3,7 @@ kind: Kustomization
 resources: 
   - cert-manager.yaml
   - ingress-nginx.yaml
+  - kube-prometheus-stack.yaml
   - loki.yaml
   - opentelemetry-operator.yaml
   - opentelemetry-demo.yaml

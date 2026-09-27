@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: spandigital.io
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 86.2.0
+    helm:
+      releaseName: kube-prometheus-stack
+      values: |
+        alertmanager:
+          alertmanagerSpec:
+            alertmanagerConfigMatcherStrategy:
+              type: None        
+        grafana:
+          additionalDataSources:
+            - name: Jaeger
+              type: jaeger
+              access: proxy
+              url: http://allinone-query.observability.svc.cluster.local:16686/jaeger
+              basicAuth: false
+              isDefault: false
+              jsonData: {"spanBar":{"type":"None"}}
+              readOnly: false
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki-gateway.observability.svc.cluster.local
+              basicAuth: false
+              isDefault: false
+              readOnly: false                        
+            datasources:
+              defaultDatasourceEnabled: true
+        prometheus:
+          # See: https://prometheus.io/docs/guides/opentelemetry/
+          prometheusSpec: 
+            enableOTLPReceiver: true
+            otlp:
+              keepIdentifyingResourceAttributes: true
+              promoteResourceAttributes:
+                - service.instance.id
+                - service.name
+                - service.namespace
+                - service.version
+                - cloud.availability_zone
+                - cloud.region
+                - container.name
+                - deployment.environment
+                - deployment.environment.name
+                - k8s.cluster.name
+                - k8s.container.name
+                - k8s.cronjob.name
+                - k8s.daemonset.name
+                - k8s.deployment.name
+                - k8s.job.name
+                - k8s.namespace.name
+                - k8s.pod.name
+                - k8s.replicaset.name
+                - k8s.statefulset.name
+              translationStrategy: UnderscoreEscapingWithSuffixes           
+            tsdb:
+              outOfOrderTimeWindow: 30m                      
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=true
+    - PruneLast=true
+    retry:
+      limit: -1
