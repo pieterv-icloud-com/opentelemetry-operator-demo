@@ -353,7 +353,6 @@ spec:
     service:
       extensions:
         - health_check
-        - opamp
         - k8s_observer
         - k8s_leader_elector/k8s_cluster
       pipelines:
