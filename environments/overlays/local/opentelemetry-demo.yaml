@@ -20,8 +20,6 @@ spec:
               value: opentelemetry-collector-collector.observability.svc.cluster.local
         jaeger:
           enabled: false              
-        opamp-server:
-          enabled: true              
         opentelemetry-collector:
           enabled: false
         components:
@@ -43,6 +41,8 @@ spec:
             envOverrides:
               - name: KAFKA_ADVERTISED_LISTENERS
                 value: PLAINTEXT://kafka.otel-demo.svc.cluster.local:9092
+          opamp-server:
+            enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: otel-demo
