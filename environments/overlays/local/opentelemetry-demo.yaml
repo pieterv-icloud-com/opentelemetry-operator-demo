@@ -19,8 +19,14 @@ spec:
             - name: OTEL_COLLECTOR_NAME
               value: opentelemetry-collector.observability.svc.cluster.local
         jaeger:
+          enabled: false
+        grafana:
+          enabled: false
+        opensearch:
           enabled: false              
         opentelemetry-collector:
+          enabled: false
+        prometheus:
           enabled: false
         components:
           frontend-proxy:
