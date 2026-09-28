@@ -1,11 +1,11 @@
-apiVersion: opentelemetry.io/v1beta1
+apiVersion: opentelemetry.io/v1alpha1
 kind: Instrumentation
 metadata:
   name: opentelemetry-collector
   namespace: observability
 spec:
   exporter:
-    endpoint: default-collector.observability.svc.cluster.local
+    endpoint: opentelemetry-collector.observability.svc.cluster.local
   propagators:
     - tracecontext
     - baggage
