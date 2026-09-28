@@ -570,7 +570,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "description": "Total number of CPU cores",
       "fieldConfig": {
@@ -636,7 +636,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "system_cpu_logical_count{ k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=\"used\" }",
@@ -651,7 +651,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "description": "Total RAM",
       "fieldConfig": {
@@ -718,7 +718,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -836,7 +836,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "description": "Total FS\n\nhttps://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/hostmetricsreceiver/internal/scraper/filesystemscraper/documentation.md",
       "fieldConfig": {
@@ -907,7 +907,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1039,7 +1039,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1233,7 +1233,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum (irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=\"system\"}[$__rate_interval])) \n/\nsum ((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -1248,7 +1248,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum (irate(system_cpu_time_seconds_total{kk8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=\"user\"}[$__rate_interval])) \n/ \nsum ((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -1263,7 +1263,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=\"wait\"}[$__rate_interval])) \n/ \nsum ((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -1278,7 +1278,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum (irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=~\".*irq\"}[$__rate_interval])) \n/\nsum((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -1293,7 +1293,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state!~\".*irq\", state!=\"idle\", state!=\"user\", state!=\"wait\", state!=\"system\"}[$__rate_interval]))\n/\nsum ((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -1308,7 +1308,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(host_name) (irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", state=\"idle\"}[$__rate_interval])) \n/ \non(host_name) group_left sum by (host_name)((irate(system_cpu_time_seconds_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\"}[$__rate_interval])))",
@@ -2138,7 +2138,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2261,7 +2261,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -2278,7 +2278,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(device) (rate(system_network_io_bytes_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", job=\"\", direction=\"receive\"}[$__rate_interval]))",
@@ -2291,7 +2291,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(device) (rate(system_network_dropped_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", job=\"\",direction=\"receive\"}[$__rate_interval]))",
@@ -2304,7 +2304,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(device) (rate(system_network_dropped_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", job=\"\",direction=\"transmit\"}[$__rate_interval]))",
@@ -2317,7 +2317,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(device) (rate(system_network_errors_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", job=\"\",direction=\"receive\"}[$__rate_interval]))",
@@ -2330,7 +2330,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by(device) (rate(system_network_errors_total{k8s_cluster_name=~\"$k8s_cluster_name\", k8s_node_name=~\"${node_name}\", host_name=~\"$host_name\", job=\"\",direction=\"transmit\"}[$__rate_interval]))",
@@ -2415,7 +2415,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2559,7 +2559,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -2711,7 +2711,7 @@
       {
         "current": {
           "text": "Prometheus",
-          "value": "webstore-metrics"
+          "value": "prometheus"
         },
         "includeAll": false,
         "label": "Data Source",

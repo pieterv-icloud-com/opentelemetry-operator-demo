@@ -117,7 +117,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -262,7 +262,7 @@
           "alias": "fetched",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -381,7 +381,7 @@
           "alias": "fetched",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -502,7 +502,7 @@
           "alias": "fetched",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -649,7 +649,7 @@
           "alias": "Buffers Allocated",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -725,7 +725,7 @@
           "alias": "Buffers Allocated",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_backend_total{job=~\"$job\",cluster=~\"$cluster\",instance=~\"$instance\"}[$__rate_interval])",
@@ -836,7 +836,7 @@
           "alias": "Buffers Allocated",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -1021,7 +1021,7 @@
           "alias": "conflicts",
           "datasource": {
             "type": "prometheus",
-            "uid": "webstore-metrics"
+            "uid": "prometheus"
           },
           "dsType": "prometheus",
           "editorMode": "code",
@@ -1139,7 +1139,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1239,7 +1239,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "webstore-metrics"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1348,7 +1348,7 @@
       {
         "current": {
           "text": "Prometheus",
-          "value": "webstore-metrics"
+          "value": "prometheus"
         },
         "includeAll": false,
         "label": "Data Source",
@@ -1367,7 +1367,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "webstore-metrics"
+          "uid": "prometheus"
         },
         "definition": "label_values(postgresql_table_count,k8s_cluster_name)",
         "description": "When deploying PostgreSQL on Kubernetes, name of the Kubernetes cluster.  \nFor other deployments, select \"All\". ",
@@ -1444,7 +1444,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "webstore-metrics"
+          "uid": "prometheus"
         },
         "definition": "label_values(postgresql_table_count{host_name=~\"$host_name\", postgresql_database_name!~\"template.*|postgres\", k8s_cluster_name=~\"$k8s_cluster_name\", k8s_statefulset_name=~\"$k8s_statefulset_name\"},postgresql_database_name)",
         "includeAll": true,

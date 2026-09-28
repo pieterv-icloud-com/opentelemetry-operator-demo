@@ -9,11 +9,9 @@ configMapGenerator:
     namespace: observability
     files:
       - dashboards/NGINX-metrics.json
-      - dashboards/apm-dashboard.json
       - dashboards/demo-dashboard.json
       - dashboards/exemplars-dashboard.json
       - dashboards/linux-dashboard.json
-      - dashboards/opentelemetry-collector.json
       - dashboards/postgresql-dashboard.json
       - dashboards/spanmetrics-dashboard.json
     options:
