@@ -25,7 +25,7 @@ spec:
             otel-max-queuesize: "2048"
             otel-schedule-delay-millis: "5000"
             otel-max-export-batch-size: "512"
-            otel-service-name: "nginx-proxy"
+            otel-service-name: "ingress-nginx-controller"
             otel-sampler: "AlwaysOn" 
             otel-sampler-ratio: "0.25"
             otel-sampler-parent-based: "true"                
