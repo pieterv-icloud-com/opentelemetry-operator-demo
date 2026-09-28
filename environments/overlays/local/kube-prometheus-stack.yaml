@@ -35,6 +35,7 @@ spec:
               basicAuth: false
               isDefault: false
               readOnly: false                        
+          sidecar:
             datasources:
               defaultDatasourceEnabled: true
         prometheus:
