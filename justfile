@@ -135,7 +135,18 @@ cluster-argocd:
 # Open Grafana at http://localhost:3000
 [group('cluster')]
 cluster-grafana:
-    kubectl --namespace otel-demo port-forward svc/grafana 3000:80
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    fuser -k 3000/tcp || echo "Grafana port wasn't open"
+
+    GRAFANA_USERNAME=$(kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{.data.admin-user}' | base64 --decode)
+    GRAFANA_PASSWORD=$(kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{.data.admin-password}' | base64 --decode)
+
+    echo "Username: ${GRAFANA_USERNAME}"
+    echo "Password: ${GRAFANA_PASSWORD}"
+
+    kubectl --namespace observability port-forward svc/kube-prometheus-stack-grafana 3000:80
 
 # Open the Load Generator UI at http://localhost:8089
 [group('cluster')]
