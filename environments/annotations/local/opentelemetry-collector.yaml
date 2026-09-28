@@ -99,13 +99,6 @@ spec:
         aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
     exporters:
       debug: {}
-      opensearch:
-        http:
-          endpoint: http://opensearch.otel-demo.svc.cluster.local:9200
-          tls:
-            insecure: true
-        logs_index: otel-logs
-        logs_index_time_format: yyyy-MM-dd
       otlp_grpc/firepit:
         endpoint: firepit.otel-demo.svc.cluster.local:4317
         tls:
@@ -116,8 +109,13 @@ spec:
           batch: {}
         tls:
           insecure: true
+      otlp_http/loki:
+        endpoint: http://loki-gateway.observability.svc.cluster.local/otlp
+        encoding: json
+        tls:
+          insecure: true          
       otlp_http/prometheus:
-        endpoint: http://prometheus.otel-demo.svc.cluster.local:9090/api/v1/otlp
+        endpoint: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/otlp
         sending_queue:
           batch: {}
         tls:
@@ -132,20 +130,6 @@ spec:
       k8s_observer:
         auth_type: serviceAccount
         node: ${env:K8S_NODE_NAME}
-      opamp:
-        agent_description:
-          include_resource_attributes: true
-          non_identifying_attributes:
-            demo.collector.role: gateway
-            deployment.environment.name: demo
-        capabilities:
-          reports_available_components: true
-          reports_effective_config: true
-          reports_health: true
-        instance_uid: 00000000-0000-7000-8000-000000000001
-        server:
-          ws:
-            endpoint: ws://opamp-server.otel-demo.svc.cluster.local:4320/v1/opamp
     processors:
       batch: {}
       filter/sanitize_profiles:
@@ -357,52 +341,18 @@ spec:
         - k8s_leader_elector/k8s_cluster
       pipelines:
         logs:
-          exporters: [opensearch, debug]
+          exporters: [debug, otlp_http/loki]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, transform/sanitize_logs]
           receivers: [otlp]
         metrics:
-          exporters: [otlp_http/prometheus, debug]
+          exporters: [debug, otlp_http/prometheus]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource]
           receivers: [otlp, kafka_metrics, span_metrics, prometheus/ad, receiver_creator/metrics, host_metrics, kubelet_stats, k8s_cluster]
         profiles:
-          exporters: [otlp_grpc/firepit, debug]
+          exporters: [debug, otlp_grpc/firepit]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, filter/sanitize_profiles]
           receivers: [otlp]
         traces:
           exporters: [otlp_grpc/jaeger, debug, span_metrics]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, transform/sanitize_spans, gen_ai_normalizer, transform/redact_sensitive_data, redaction]
           receivers: [otlp, jaeger, zipkin]
-      telemetry:
-        logs:
-          processors:
-            - batch:
-                exporter:
-                  otlp:
-                    endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318
-                    insecure: true
-                    protocol: http/protobuf
-        metrics:
-          level: detailed
-          readers:
-            - periodic:
-                exporter:
-                  otlp:
-                    endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318
-                    insecure: true
-                    protocol: http/protobuf
-                interval: 10000
-                timeout: 5000
-        resource:
-          attributes:
-            - name: host.name
-              value: ${env:OTEL_K8S_NODE_NAME}
-            - name: k8s.namespace.name
-              value: ${env:OTEL_K8S_NAMESPACE}
-            - name: k8s.node.ip
-              value: ${env:OTEL_K8S_NODE_IP}
-            - name: k8s.node.name
-              value: ${env:OTEL_K8S_NODE_NAME}
-            - name: k8s.pod.ip
-              value: ${env:OTEL_K8S_POD_IP}
-            - name: k8s.pod.name
-              value: ${env:OTEL_K8S_POD_NAME}
