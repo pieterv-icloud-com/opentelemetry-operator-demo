@@ -19,9 +19,12 @@ spec:
             alertmanagerConfigMatcherStrategy:
               type: None        
         grafana:
+          plugins:
+            - grafana-opensearch-datasource
           additionalDataSources:
             - name: Jaeger
               type: jaeger
+              uid: webstore-traces
               access: proxy
               url: http://jaeger-collector.observability.svc.cluster.local:16686
               basicAuth: false
@@ -35,6 +38,28 @@ spec:
               basicAuth: false
               isDefault: false
               readOnly: false                        
+            - name: OpenTelemetry Demo Prometheus
+              type: prometheus
+              uid: webstore-metrics
+              access: proxy
+              url: http://kube-prometheus-stack-prometheus.observability:9090/
+              isDefault: false
+              jsonData:
+                timeInterval: 60s
+            - name: OpenTelemetry Demo OpenSearch
+              type: grafana-opensearch-datasource
+              uid: webstore-logs
+              access: proxy
+              url: http://opensearch.otel-demo.svc.cluster.local:9200/
+              isDefault: false
+              jsonData:
+                database: otel-logs-*
+                flavor: opensearch
+                logLevelField: severity.text.keyword
+                logMessageField: body
+                pplEnabled: true
+                timeField: observedTimestamp
+                version: 3.8.0
           sidecar:
             datasources:
               defaultDatasourceEnabled: true
