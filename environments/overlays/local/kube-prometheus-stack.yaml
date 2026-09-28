@@ -23,7 +23,7 @@ spec:
             - name: Jaeger
               type: jaeger
               access: proxy
-              url: http://allinone-query.observability.svc.cluster.local:16686/jaeger
+              url: http://jaeger-collector.observability.svc.cluster.local:16686
               basicAuth: false
               isDefault: false
               jsonData: {"spanBar":{"type":"None"}}
