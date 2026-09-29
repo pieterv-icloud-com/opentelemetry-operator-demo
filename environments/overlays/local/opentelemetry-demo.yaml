@@ -94,6 +94,8 @@ spec:
                 value: flagd
               - name: FLAGD_PORT
                 value: "8013"
+              - name: FLAGD_STREAM_DEADLINE_MS
+                value: "0"
               - name: MCP_ENDPOINT
                 value: mcp
               - name: MCP_PORT
@@ -173,6 +175,8 @@ spec:
                 value: flagd
               - name: FLAGD_PORT
                 value: "8013"
+              - name: FLAGD_STREAM_DEADLINE_MS
+                value: "0"
               - name: FLAGD_OFREP_PORT
                 value: "8016"
               - name: AGENT_ENDPOINT
@@ -219,6 +223,8 @@ spec:
                 value: flagd
               - name: FLAGD_PORT
                 value: "8013"
+              - name: FLAGD_STREAM_DEADLINE_MS
+                value: "0"
           # Services below have a manually-coded OTel SDK with no operator agent available for
           # their language (or, for Go, an agent that would conflict with the compiled-in SDK).
           # inject-sdk only injects the shared exporter/resource/sampler env vars, not an agent,
