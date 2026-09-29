@@ -12,7 +12,6 @@ spec:
   propagators:
     - tracecontext
     - baggage
-    - b3
   sampler:
     type: parentbased_always_on
     argument: "0.25"
