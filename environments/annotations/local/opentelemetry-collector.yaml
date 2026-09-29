@@ -63,7 +63,7 @@ spec:
           fieldPath: status.podIP
     - name: GOMEMLIMIT
       value: 320MiB
-  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.161.0
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:latest
   resources:
     limits:
       memory: 400Mi
