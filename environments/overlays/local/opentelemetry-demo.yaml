@@ -1,6 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  # Demo workloads use the operator's CRDs and admission webhook; sync after wave 0.
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: opentelemetry-demo
   namespace: argocd
   finalizers:

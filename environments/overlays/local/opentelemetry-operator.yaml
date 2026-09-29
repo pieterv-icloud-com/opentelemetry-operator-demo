@@ -1,6 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  # The demo Application is wave 1 and depends on this operator being healthy.
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   name: opentelemetry-operator
