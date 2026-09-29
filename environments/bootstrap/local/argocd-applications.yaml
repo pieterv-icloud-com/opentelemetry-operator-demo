@@ -33,6 +33,7 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - PruneLast=true
+      - SkipDryRunOnMissingResource=true
     retry:
       limit: -1
 ---
@@ -60,5 +61,6 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - PruneLast=true
+      - SkipDryRunOnMissingResource=true
     retry:
       limit: -1
