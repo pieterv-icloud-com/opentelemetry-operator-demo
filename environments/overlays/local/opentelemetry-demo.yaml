@@ -29,6 +29,361 @@ spec:
         prometheus:
           enabled: false
         components:
+          # Java, Python, .NET and Node.js services below use the shared operator
+          # Instrumentation CR (environments/annotations/local/opentelemetry-collector.yaml)
+          # instead of manual OTEL_EXPORTER_OTLP_* / OTEL_RESOURCE_ATTRIBUTES_EXTRA env vars.
+          # useDefault.env: false + a full env list is required because the operator
+          # will not override an env var that the chart already sets by name.
+          ad:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: medium
+              instrumentation.opentelemetry.io/inject-java: "true"
+            useDefault:
+              env: false
+            env:
+              - name: AD_PORT
+                value: "8080"
+              - name: AD_PROMETHEUS_PORT
+                value: "9465"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: OTEL_LOGS_EXPORTER
+                value: otlp
+              - name: OTEL_EXPERIMENTAL_SDK_TELEMETRY_VERSION
+                value: latest
+          fraud-detection:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-java: "true"
+            useDefault:
+              env: false
+            env:
+              - name: KAFKA_ADDR
+                value: kafka:9092
+              - name: KAFKA_TOPIC
+                value: orders
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: OTEL_INSTRUMENTATION_KAFKA_EXPERIMENTAL_SPAN_ATTRIBUTES
+                value: "true"
+              - name: OTEL_INSTRUMENTATION_MESSAGING_EXPERIMENTAL_RECEIVE_TELEMETRY_ENABLED
+                value: "true"
+              - name: OTEL_EXPERIMENTAL_SDK_TELEMETRY_VERSION
+                value: latest
+          agent:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-python: "true"
+            useDefault:
+              env: false
+            env:
+              - name: AGENT_PORT
+                value: "8010"
+              - name: AGENT_ENDPOINT
+                value: agent
+              - name: GRAPH_RECURSION_LIMIT
+                value: "25"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: MCP_ENDPOINT
+                value: mcp
+              - name: MCP_PORT
+                value: "8011"
+              - name: MCP_ENABLED
+                value: "False"
+              - name: LLM_BASE_URL
+                value: https://local-llm.com
+              - name: LLM_MODEL
+                value: azure/gpt-5.5
+              - name: API_KEY
+                value: ""
+              - name: OPENAI_API_KEY
+                value: $(API_KEY)
+              - name: USE_VCR
+                value: "True"
+              - name: VCR_MATCH_THRESHOLD
+                value: "0.85"
+              - name: LLM_TLS_VERIFY
+                value: "True"
+              - name: APPLICATION_ENDPOINT
+                value: frontend:8080
+              # Manual Traceloop/OpenLLMetry GenAI SDK; independent of the operator's auto-instrumentation
+              - name: TRACELOOP_BASE_URL
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4318
+              - name: OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED
+                value: "true"
+          chatbot:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-python: "true"
+            useDefault:
+              env: false
+            env:
+              - name: CHATBOT_PORT
+                value: "7860"
+              - name: CHATBOT_ROOT_PATH
+                value: /chatbot
+              - name: AGENT_PORT
+                value: "8010"
+              - name: AGENT_ENDPOINT
+                value: agent
+              - name: OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED
+                value: "true"
+          load-generator:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-python: "true"
+            useDefault:
+              env: false
+            env:
+              - name: LOCUST_WEB_HOST
+                value: "0.0.0.0"
+              - name: LOCUST_WEB_PORT
+                value: "8089"
+              - name: LOCUST_USERS
+                value: "5"
+              - name: LOCUST_HOST
+                value: http://frontend-proxy:8080
+              - name: LOCUST_HEADLESS
+                value: "false"
+              - name: LOCUST_AUTOSTART
+                value: "true"
+              - name: LOCUST_BROWSER_TRAFFIC_ENABLED
+                value: "true"
+              - name: LOCUST_HTTP_USER_WEIGHT
+                value: "9"
+              - name: LOCUST_BROWSER_USER_WEIGHT
+                value: "1"
+              - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
+                value: python
+              - name: OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED
+                value: "true"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: FLAGD_OFREP_PORT
+                value: "8016"
+              - name: AGENT_ENDPOINT
+                value: agent
+              - name: AGENT_PORT
+                value: "8010"
+          mcp:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-python: "true"
+            useDefault:
+              env: false
+            env:
+              - name: MCP_PORT
+                value: "8011"
+              - name: MCP_ENDPOINT
+                value: mcp
+              - name: APPLICATION_ENDPOINT
+                value: frontend:8080
+              - name: TRACELOOP_BASE_URL
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4318
+              - name: OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED
+                value: "true"
+          recommendation:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: medium
+              instrumentation.opentelemetry.io/inject-python: "true"
+            useDefault:
+              env: false
+            env:
+              - name: RECOMMENDATION_PORT
+                value: "8080"
+              - name: PRODUCT_CATALOG_ADDR
+                value: product-catalog:8080
+              - name: OTEL_PYTHON_LOG_CORRELATION
+                value: "true"
+              - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
+                value: python
+              - name: OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED
+                value: "true"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+          # Services below have a manually-coded OTel SDK with no operator agent available for
+          # their language (or, for Go, an agent that would conflict with the compiled-in SDK).
+          # inject-sdk only injects the shared exporter/resource/sampler env vars, not an agent,
+          # so it's safe to combine with their existing manual instrumentation.
+          currency:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: high
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: CURRENCY_PORT
+                value: "8080"
+              - name: VERSION
+                value: "{{ .Chart.AppVersion }}"
+              - name: IPV6_ENABLED
+                value: "false"
+          email:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: medium
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: EMAIL_PORT
+                value: "8080"
+              - name: APP_ENV
+                value: production
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+          quote:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: QUOTE_PORT
+                value: "8080"
+              - name: OTEL_PHP_AUTOLOAD_ENABLED
+                value: "true"
+              - name: OTEL_PHP_INTERNAL_METRICS_ENABLED
+                value: "true"
+              - name: IPV6_ENABLED
+                value: "false"
+          shipping:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: high
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: SHIPPING_PORT
+                value: "8080"
+              - name: QUOTE_ADDR
+                value: http://quote:8080
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: IPV6_ENABLED
+                value: "false"
+          checkout:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: critical
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: CHECKOUT_PORT
+                value: "8080"
+              - name: CART_ADDR
+                value: cart:8080
+              - name: CURRENCY_ADDR
+                value: currency:8080
+              - name: EMAIL_ADDR
+                value: http://email:8080
+              - name: PAYMENT_ADDR
+                value: payment:8080
+              - name: PRODUCT_CATALOG_ADDR
+                value: product-catalog:8080
+              - name: SHIPPING_ADDR
+                value: http://shipping:8080
+              - name: KAFKA_ADDR
+                value: kafka:9092
+              - name: KAFKA_TOPIC
+                value: orders
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: GOMEMLIMIT
+                value: 16MiB
+              - name: OTEL_GO_X_OBSERVABILITY
+                value: "true"
+          product-catalog:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: high
+              instrumentation.opentelemetry.io/inject-sdk: "true"
+            useDefault:
+              env: false
+            env:
+              - name: PRODUCT_CATALOG_PORT
+                value: "8080"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: GOMEMLIMIT
+                value: 16MiB
+              - name: OTEL_GO_X_OBSERVABILITY
+                value: "true"
+              - name: DB_CONNECTION_STRING
+                value: postgres://astronomy_user:astronomy_password@astronomy-db/astronomy_db?sslmode=disable
+              - name: OTEL_SEMCONV_STABILITY_OPT_IN
+                value: database
+              # references ${OTEL_EXPORTER_OTLP_ENDPOINT} / ${OTEL_RESOURCE_ATTRIBUTES}, both injected by inject-sdk
+              - name: OTEL_CONFIG_FILE
+                value: /otel-config.yml
+          accounting:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: low
+              instrumentation.opentelemetry.io/inject-dotnet: "true"
+            useDefault:
+              env: false
+            env:
+              - name: KAFKA_ADDR
+                value: kafka:9092
+              - name: KAFKA_TOPIC
+                value: orders
+              - name: DB_CONNECTION_STRING
+                value: Host=astronomy-db;Username=astronomy_user;Password=astronomy_password;Database=astronomy_db
+              - name: OTEL_DOTNET_AUTO_TRACES_ENTITYFRAMEWORKCORE_INSTRUMENTATION_ENABLED
+                value: "false"
+          cart:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: high
+              instrumentation.opentelemetry.io/inject-dotnet: "true"
+            useDefault:
+              env: false
+            env:
+              - name: CART_PORT
+                value: "8080"
+              - name: ASPNETCORE_URLS
+                value: http://*:$(CART_PORT)
+              - name: VALKEY_ADDR
+                value: valkey-cart:6379
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: OPAMP_SERVER_ENDPOINT
+                value: ws://opamp-server:4320/v1/opamp
+              - name: OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY
+                value: "false"
           frontend-proxy:
             ingress:
               enabled: true
@@ -40,9 +395,62 @@ spec:
                       pathType: Prefix
                       port: 8080
           frontend:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: critical
+              instrumentation.opentelemetry.io/inject-nodejs: "true"
+            useDefault:
+              env: false
+            env:
+              - name: FRONTEND_PORT
+                value: "8080"
+              - name: PORT
+                value: $(FRONTEND_PORT)
+              - name: FRONTEND_ADDR
+                value: frontend:8080
+              - name: AD_ADDR
+                value: ad:8080
+              - name: CART_ADDR
+                value: cart:8080
+              - name: CHECKOUT_ADDR
+                value: checkout:8080
+              - name: CURRENCY_ADDR
+                value: currency:8080
+              - name: PRODUCT_CATALOG_ADDR
+                value: product-catalog:8080
+              - name: RECOMMENDATION_ADDR
+                value: recommendation:8080
+              - name: SHIPPING_ADDR
+                value: http://shipping:8080
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: ENV_PLATFORM
+                value: kubernetes
+              - name: WEB_OTEL_SERVICE_NAME
+                value: frontend-web
+              - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                value: http://localhost:8080/otlp-http/v1/traces             # This expects users to use `kubectl port-forward ...`
             envOverrides:
               - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
                 value: http://otel-demo.local/otlp-http/v1/traces
+          payment:
+            podAnnotations:
+              resource.opentelemetry.io/service.namespace: opentelemetry-demo
+              resource.opentelemetry.io/service.criticality: critical
+              instrumentation.opentelemetry.io/inject-nodejs: "true"
+            useDefault:
+              env: false
+            env:
+              - name: PAYMENT_PORT
+                value: "8080"
+              - name: FLAGD_HOST
+                value: flagd
+              - name: FLAGD_PORT
+                value: "8013"
+              - name: IPV6_ENABLED
+                value: "false"
           kafka:
             envOverrides:
               - name: KAFKA_ADVERTISED_LISTENERS

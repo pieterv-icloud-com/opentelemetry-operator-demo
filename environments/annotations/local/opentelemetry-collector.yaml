@@ -5,7 +5,8 @@ metadata:
   namespace: observability
 spec:
   exporter:
-    endpoint: opentelemetry-collector.observability.svc.cluster.local
+    # http/protobuf is the default protocol for java/python/dotnet; nodejs is forced onto it below to match
+    endpoint: http://opentelemetry-collector.observability.svc.cluster.local:4318
   propagators:
     - tracecontext
     - baggage
@@ -13,6 +14,10 @@ spec:
   sampler:
     type: parentbased_always_on
     argument: "0.25"
+  nodejs:
+    env:
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: http/protobuf
 ---    
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
