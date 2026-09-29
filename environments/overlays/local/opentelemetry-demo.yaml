@@ -38,7 +38,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: medium
-              instrumentation.opentelemetry.io/inject-java: "true"
+              instrumentation.opentelemetry.io/inject-java: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -58,7 +58,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-java: "true"
+              instrumentation.opentelemetry.io/inject-java: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -80,7 +80,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-python: "true"
+              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -125,7 +125,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-python: "true"
+              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -143,7 +143,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-python: "true"
+              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -183,7 +183,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-python: "true"
+              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -201,7 +201,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: medium
-              instrumentation.opentelemetry.io/inject-python: "true"
+              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -227,7 +227,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: high
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -241,7 +241,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: medium
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -257,7 +257,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -273,7 +273,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: high
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -325,7 +325,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: high
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -350,7 +350,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-dotnet: "true"
+              instrumentation.opentelemetry.io/inject-dotnet: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -366,7 +366,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: high
-              instrumentation.opentelemetry.io/inject-dotnet: "true"
+              instrumentation.opentelemetry.io/inject-dotnet: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -398,7 +398,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: critical
-              instrumentation.opentelemetry.io/inject-nodejs: "true"
+              instrumentation.opentelemetry.io/inject-nodejs: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -439,7 +439,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: critical
-              instrumentation.opentelemetry.io/inject-nodejs: "true"
+              instrumentation.opentelemetry.io/inject-nodejs: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
