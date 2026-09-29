@@ -6,5 +6,6 @@ resources:
   - kube-prometheus-stack.yaml
   - loki.yaml
   - opentelemetry-operator.yaml
+  - opentelemetry-instrumentation.yaml
   - opentelemetry-demo.yaml
   - metrics-server.yaml
