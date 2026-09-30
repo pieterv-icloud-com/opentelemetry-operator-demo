@@ -22,14 +22,6 @@ spec:
           plugins:
             - grafana-opensearch-datasource
           additionalDataSources:
-            - name: Jaeger
-              type: jaeger
-              access: proxy
-              url: http://jaeger-collector.observability.svc.cluster.local:16686
-              basicAuth: false
-              isDefault: false
-              jsonData: {"spanBar":{"type":"None"}}
-              readOnly: false
             - name: Loki
               type: loki
               access: proxy
