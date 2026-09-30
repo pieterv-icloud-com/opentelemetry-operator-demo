@@ -148,7 +148,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: low
-              instrumentation.opentelemetry.io/inject-python: "observability/opentelemetry-collector"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
