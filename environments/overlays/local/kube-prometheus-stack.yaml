@@ -28,7 +28,14 @@ spec:
               url: http://loki-gateway.observability.svc.cluster.local
               basicAuth: false
               isDefault: false
-              readOnly: false                        
+              readOnly: false
+            - name: Tempo
+              type: tempo
+              access: proxy
+              url: http://tempo.observability.svc.cluster.local:3200
+              basicAuth: false
+              isDefault: false
+              readOnly: false
           sidecar:
             datasources:
               defaultDatasourceEnabled: true

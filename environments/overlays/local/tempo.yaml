@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tempo
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: opentelemetry-operator-demo
+  source:
+    chart: tempo
+    repoURL: https://grafana-community.github.io/helm-charts
+    targetRevision: 3.1.0
+    helm:
+      releaseName: tempo
+      values: |
+        tempo:
+          retention: 24h
+          storage:
+            trace:
+              backend: local
+              local:
+                path: /var/tempo/traces
+              wal:
+                path: /var/tempo/wal
+        persistence:
+          enabled: true
+          size: 10Gi
+          storageClassName: standard
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        serviceMonitor:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+      - PruneLast=true
+    retry:
+      limit: -1

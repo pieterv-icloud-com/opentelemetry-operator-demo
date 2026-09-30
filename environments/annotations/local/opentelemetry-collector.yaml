@@ -109,6 +109,12 @@ spec:
           batch: {}
         tls:
           insecure: true
+      otlp_grpc/tempo:
+        endpoint: tempo.observability.svc.cluster.local:4317
+        sending_queue:
+          batch: {}
+        tls:
+          insecure: true
       otlp_http/loki:
         endpoint: http://loki-gateway.observability.svc.cluster.local/otlp
         encoding: json
@@ -364,6 +370,6 @@ spec:
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, filter/sanitize_profiles]
           receivers: [otlp]
         traces:
-          exporters: [otlp_grpc/jaeger, debug, span_metrics]
+          exporters: [otlp_grpc/jaeger, otlp_grpc/tempo, debug, span_metrics]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, transform/sanitize_spans, gen_ai_normalizer, transform/redact_sensitive_data, redaction]
           receivers: [otlp, jaeger, zipkin]
