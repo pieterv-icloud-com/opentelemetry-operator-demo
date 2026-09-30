@@ -285,6 +285,14 @@ spec:
       k8s_cluster:
         collection_interval: 10s
         k8s_leader_elector: k8s_leader_elector/k8s_cluster
+      postgresql:
+        endpoint: astronomy-db.otel-demo.svc.cluster.local:5432
+        transport: tcp
+        username: astronomy_user
+        password: astronomy_password
+        databases:
+          - astronomy_db
+        collection_interval: 10s
       kafka_metrics:
         brokers:
           - kafka.otel-demo.svc.cluster.local:9092
@@ -348,7 +356,7 @@ spec:
         metrics:
           exporters: [debug, otlp_http/prometheus]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource]
-          receivers: [otlp, kafka_metrics, span_metrics, prometheus/ad, receiver_creator/metrics, host_metrics, kubelet_stats, k8s_cluster]
+          receivers: [otlp, kafka_metrics, postgresql, span_metrics, prometheus/ad, receiver_creator/metrics, host_metrics, kubelet_stats, k8s_cluster]
         profiles:
           exporters: [debug, otlp_grpc/firepit]
           processors: [k8s_attributes, memory_limiter, resource_detection, resource, filter/sanitize_profiles]
