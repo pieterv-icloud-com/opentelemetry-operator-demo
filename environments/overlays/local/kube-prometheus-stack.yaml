@@ -24,7 +24,6 @@ spec:
           additionalDataSources:
             - name: Jaeger
               type: jaeger
-              uid: webstore-traces
               access: proxy
               url: http://jaeger-collector.observability.svc.cluster.local:16686
               basicAuth: false
