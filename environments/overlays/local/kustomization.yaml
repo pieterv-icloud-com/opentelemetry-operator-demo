@@ -5,6 +5,7 @@ resources:
   - ingress-nginx.yaml
   - kube-prometheus-stack.yaml
   - loki.yaml
+  - pyroscope.yaml
   - tempo.yaml
   - opentelemetry-operator.yaml
   - opentelemetry-instrumentation.yaml

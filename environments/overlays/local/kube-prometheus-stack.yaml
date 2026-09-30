@@ -36,6 +36,13 @@ spec:
               basicAuth: false
               isDefault: false
               readOnly: false
+            - name: Pyroscope
+              type: grafana-pyroscope-datasource
+              access: proxy
+              url: http://pyroscope.observability.svc.cluster.local:4040
+              basicAuth: false
+              isDefault: false
+              readOnly: false
           sidecar:
             datasources:
               defaultDatasourceEnabled: true
