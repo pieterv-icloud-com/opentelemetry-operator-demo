@@ -6,6 +6,7 @@ metadata:
 spec:
   mode: daemonset
   image: otel/opentelemetry-collector-ebpf-profiler:latest
+  serviceAccount: opentelemetry-collector
   args:
     feature-gates: +service.profilesSupport
   hostPID: true
@@ -59,7 +60,7 @@ spec:
         tls:
           insecure: true
     processors:
-      k8sattributes:
+      k8s_attributes:
         auth_type: serviceAccount
         passthrough: false
         extract:
@@ -84,5 +85,5 @@ spec:
       pipelines:
         profiles:
           exporters: [otlp_grpc/pyroscope]
-          processors: [k8sattributes]
+          processors: [k8s_attributes]
           receivers: [profiling]
