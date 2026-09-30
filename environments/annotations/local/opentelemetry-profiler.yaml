@@ -1,0 +1,88 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: ebpf-profiler
+  namespace: observability
+spec:
+  mode: daemonset
+  image: otel/opentelemetry-collector-ebpf-profiler:latest
+  args:
+    feature-gates: +service.profilesSupport
+  hostPID: true
+  securityContext:
+    privileged: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  volumes:
+    - name: proc
+      hostPath:
+        path: /proc
+    - name: sys-kernel
+      hostPath:
+        path: /sys/kernel
+    - name: sys-kernel-debug
+      hostPath:
+        path: /sys/kernel/debug
+    - name: sys-fs-cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: lib-modules
+      hostPath:
+        path: /lib/modules
+  volumeMounts:
+    - name: proc
+      mountPath: /proc
+      readOnly: true
+    - name: sys-kernel
+      mountPath: /sys/kernel
+      readOnly: true
+    - name: sys-kernel-debug
+      mountPath: /sys/kernel/debug
+      readOnly: true
+    - name: sys-fs-cgroup
+      mountPath: /sys/fs/cgroup
+      readOnly: true
+    - name: lib-modules
+      mountPath: /lib/modules
+      readOnly: true
+  config:
+    receivers:
+      profiling:
+        samples_per_second: 97
+    exporters:
+      otlp_grpc/pyroscope:
+        endpoint: pyroscope.observability.svc.cluster.local:4040
+        tls:
+          insecure: true
+    processors:
+      k8sattributes:
+        auth_type: serviceAccount
+        passthrough: false
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.namespace.name
+            - k8s.deployment.name
+            - k8s.node.name
+            - k8s.container.name
+            - container.image.name
+            - container.image.tag
+            - service.name
+            - service.namespace
+            - service.instance.id
+          otel_annotations: true
+        pod_association:
+          - sources:
+              - from: resource_attribute
+                name: container.id
+    service:
+      pipelines:
+        profiles:
+          exporters: [otlp_grpc/pyroscope]
+          processors: [k8sattributes]
+          receivers: [profiling]

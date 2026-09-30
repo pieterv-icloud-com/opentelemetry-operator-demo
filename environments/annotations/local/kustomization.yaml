@@ -3,6 +3,7 @@ kind: Kustomization
 resources: 
   - jaeger-collector.yaml
   - opentelemetry-collector.yaml
+  - opentelemetry-profiler.yaml
   - opentelemetry-collector-rbac.yaml
 configMapGenerator:
   - name: opentelemetry-demo-dashboards
