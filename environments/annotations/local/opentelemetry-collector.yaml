@@ -293,6 +293,8 @@ spec:
         databases:
           - astronomy_db
         collection_interval: 10s
+        tls:
+          insecure: true
       kafka_metrics:
         brokers:
           - kafka.otel-demo.svc.cluster.local:9092
