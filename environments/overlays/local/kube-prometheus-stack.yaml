@@ -57,6 +57,8 @@ spec:
                 - container.name
                 - deployment.environment
                 - deployment.environment.name
+                - host.name
+                - postgresql.database.name
                 - k8s.cluster.name
                 - k8s.container.name
                 - k8s.cronjob.name
