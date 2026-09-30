@@ -1,3 +1,6 @@
+# Kind Issue, will not work
+# https://github.com/open-telemetry/opentelemetry-ebpf-profiler/pull/1651
+# https://github.com/kubernetes-sigs/kind/issues/3182
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
