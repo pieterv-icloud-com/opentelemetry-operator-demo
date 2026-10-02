@@ -246,6 +246,11 @@ spec:
                 value: "{{ .Chart.AppVersion }}"
               - name: IPV6_ENABLED
                 value: "false"
+              # this service's C++ SDK hardcodes the otlp_grpc exporter and ignores
+              # OTEL_EXPORTER_OTLP_PROTOCOL, so pin the endpoint to the gRPC port
+              # (the Instrumentation CR's shared endpoint is the OTLP/HTTP port, 4318)
+              - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4317
           email:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
