@@ -216,13 +216,11 @@ spec:
                 value: "8080"
               - name: PRODUCT_CATALOG_ADDR
                 value: product-catalog:8080
-              # KNOWN ISSUE: recommendation_server.py manually constructs its own OTLP gRPC
-              # LoggerProvider in code, ignoring OTEL_LOGS_EXPORTER/OTEL_EXPORTER_OTLP_*PROTOCOL
-              # env vars, so it still tries gRPC against the shared OTLP/HTTP endpoint (4318) and
-              # logs "Failed to export logs" warnings. Traces/metrics are unaffected (http/protobuf
-              # works for those). Fixing this requires a source change upstream in the demo app.
-              - name: OTEL_LOGS_EXPORTER
-                value: "none"
+              # recommendation_server.py constructs its own OTLP gRPC log exporter in code, ignoring
+              # OTEL_LOGS_EXPORTER/OTEL_EXPORTER_OTLP_*_PROTOCOL; it still reads endpoint from env,
+              # so pin just the logs signal to the gRPC port (traces/metrics keep using 4318/http)
+              - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4317
               - name: OTEL_PYTHON_LOG_CORRELATION
                 value: "true"
               - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
