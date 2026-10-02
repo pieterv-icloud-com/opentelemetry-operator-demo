@@ -216,11 +216,13 @@ spec:
                 value: "8080"
               - name: PRODUCT_CATALOG_ADDR
                 value: product-catalog:8080
-              # merely having OTEL_EXPORTER_OTLP_LOGS_ENDPOINT set (even to the same value as the
-              # general endpoint) makes this SDK select its http/protobuf exporter for logs instead
-              # of defaulting to gRPC, which otherwise can't reach the shared OTLP/HTTP endpoint
-              - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
-                value: http://opentelemetry-collector.observability.svc.cluster.local:4318
+              # KNOWN ISSUE: this service runs two independent OTLP log exporters (auto-instrumentation's
+              # bootstrap LoggerProvider, blocked from being replaced, plus one the app code sets up
+              # itself) and neither is cleanly fixable via env vars: the auto-instrumentation one ignores
+              # OTEL_EXPORTER_OTLP_PROTOCOL/OTEL_EXPORTER_OTLP_LOGS_* and stays on gRPC against the
+              # shared HTTP endpoint, while forcing the app's exporter onto http/protobuf just moves the
+              # failure to a 404 (wrong request path). Traces/metrics are unaffected. Needs an upstream
+              # source fix in the demo app, not a config change here.
               - name: OTEL_PYTHON_LOG_CORRELATION
                 value: "true"
               - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
