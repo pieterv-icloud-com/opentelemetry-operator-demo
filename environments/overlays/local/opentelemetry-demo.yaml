@@ -216,6 +216,11 @@ spec:
                 value: "8080"
               - name: PRODUCT_CATALOG_ADDR
                 value: product-catalog:8080
+              # merely having OTEL_EXPORTER_OTLP_LOGS_ENDPOINT set (even to the same value as the
+              # general endpoint) makes this SDK select its http/protobuf exporter for logs instead
+              # of defaulting to gRPC, which otherwise can't reach the shared OTLP/HTTP endpoint
+              - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4318
               - name: OTEL_PYTHON_LOG_CORRELATION
                 value: "true"
               - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
