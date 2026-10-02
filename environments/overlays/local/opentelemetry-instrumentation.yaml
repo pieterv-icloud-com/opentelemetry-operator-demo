@@ -7,15 +7,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   exporter:
-    # http/protobuf is the default protocol for java/python/dotnet; nodejs is forced onto it below to match
+    # endpoint is the OTLP/HTTP port; env below forces every SDK (incl. ones with a
+    # gRPC default like C++/Go) onto http/protobuf so they don't try gRPC against it
     endpoint: http://opentelemetry-collector.observability.svc.cluster.local:4318
+  env:
+    - name: OTEL_EXPORTER_OTLP_PROTOCOL
+      value: http/protobuf
   propagators:
     - tracecontext
     - baggage
   sampler:
     type: parentbased_always_on
     argument: "0.25"
-  nodejs:
-    env:
-      - name: OTEL_EXPORTER_OTLP_PROTOCOL
-        value: http/protobuf

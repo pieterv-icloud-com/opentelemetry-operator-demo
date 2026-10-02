@@ -300,7 +300,7 @@ spec:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
               resource.opentelemetry.io/service.criticality: critical
-              instrumentation.opentelemetry.io/inject-sdk: "true"
+              instrumentation.opentelemetry.io/inject-sdk: "observability/opentelemetry-collector"
             useDefault:
               env: false
             env:
@@ -355,6 +355,10 @@ spec:
               # references ${OTEL_EXPORTER_OTLP_ENDPOINT} / ${OTEL_RESOURCE_ATTRIBUTES}, both injected by inject-sdk
               - name: OTEL_CONFIG_FILE
                 value: /otel-config.yml
+              # otel-config.yml hardcodes otlp_grpc exporters, so pin the endpoint to the gRPC port
+              # (the Instrumentation CR's shared endpoint is the OTLP/HTTP port, 4318)
+              - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                value: http://opentelemetry-collector.observability.svc.cluster.local:4317
           accounting:
             podAnnotations:
               resource.opentelemetry.io/service.namespace: opentelemetry-demo
