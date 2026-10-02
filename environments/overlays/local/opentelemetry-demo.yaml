@@ -216,10 +216,11 @@ spec:
                 value: "8080"
               - name: PRODUCT_CATALOG_ADDR
                 value: product-catalog:8080
-              # the python auto-instrumentation's logs exporter ignores OTEL_EXPORTER_OTLP_PROTOCOL
-              # and defaults to gRPC, so pin it to http/protobuf explicitly for the logs signal
-              - name: OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
-                value: http/protobuf
+              # this auto-instrumentation image's logs exporter is hardcoded to gRPC and ignores
+              # OTEL_EXPORTER_OTLP_PROTOCOL / OTEL_EXPORTER_OTLP_LOGS_PROTOCOL, so it can't reach
+              # the shared OTLP/HTTP endpoint; disable OTLP log export here rather than mismatch it
+              - name: OTEL_LOGS_EXPORTER
+                value: "none"
               - name: OTEL_PYTHON_LOG_CORRELATION
                 value: "true"
               - name: PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION
