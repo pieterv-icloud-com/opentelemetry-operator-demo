@@ -6,7 +6,7 @@ metadata:
   namespace: observability
 spec:
   mode: daemonset
-  image: otel/opentelemetry-collector-ebpf-profiler:latest
+  image: otel/opentelemetry-collector-ebpf-profiler:nightly
   serviceAccount: opentelemetry-collector
   args:
     feature-gates: +service.profilesSupport
