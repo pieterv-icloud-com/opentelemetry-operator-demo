@@ -1,6 +1,4 @@
-# Kind Issue, will not work
-# https://github.com/open-telemetry/opentelemetry-ebpf-profiler/pull/1651
-# https://github.com/kubernetes-sigs/kind/issues/3182
+# Kind pod processes use descendant PID namespaces; recursive translation is required.
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
@@ -57,6 +55,7 @@ spec:
     receivers:
       profiling:
         samples_per_second: 97
+        pid_namespace_translation_mode: recursive
     exporters:
       otlp_grpc/pyroscope:
         endpoint: pyroscope.observability.svc.cluster.local:4040
