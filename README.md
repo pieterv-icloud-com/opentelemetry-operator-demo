@@ -1,5 +1,7 @@
 # OpenTelemetry Operator Demo
 
+[![Open in Dev Container](https://img.shields.io/badge/VS%20Code-Open%20in%20Dev%20Container-blue?logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/pieterv-icloud-com/opentelemetry-operator-demo)
+
 A local Kubernetes demo environment for exploring the OpenTelemetry Operator and
 the OpenTelemetry Demo application. The cluster and its add-ons are managed with
 `kind`, Argo CD, Helm, and Kustomize. The observability stack includes
