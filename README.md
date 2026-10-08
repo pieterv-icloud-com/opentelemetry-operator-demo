@@ -30,6 +30,19 @@ Argo CD then deploys the applications defined under `environments/`. Its Git
 source tracks the current branch by default (`CLUSTER_BRANCH`), so that branch
 must be available in the configured Git remote for Argo CD to sync it.
 
+## Accessing the demo site
+
+Add the following entry to your local machine's hosts file to access the demo
+site at <http://otel-demo.local>:
+
+```text
+172.18.0.8 otel-demo.local
+```
+
+On Linux and macOS, the hosts file is `/etc/hosts`. On Windows, it is
+`C:\Windows\System32\drivers\etc\hosts`. Save the file with administrator
+privileges if prompted.
+
 > **Warning:** `cluster-create` runs `cluster-delete` first. It deletes an
 > existing `kind` cluster with the configured name before creating it again.
 > Kubernetes resources and data in that cluster will be lost.
