@@ -63,6 +63,8 @@ running while using the corresponding UI. Stop a port-forward with `Ctrl+C`.
 - `environments/overlays/` — Helm-backed infrastructure and demo applications.
 - `environments/annotations/` — OpenTelemetry Collector configuration,
   permissions, Jaeger configuration, and Grafana dashboards.
+- [`docs/architecture.md`](docs/architecture.md) — telemetry data flow through
+  the demo and observability stack.
 - `kind-config.yaml` — Local Kubernetes cluster configuration.
 - `justfile` — Setup, cluster lifecycle, and port-forward recipes.
 - `.devcontainer/` — VS Code Dev Container tooling and initialization.
