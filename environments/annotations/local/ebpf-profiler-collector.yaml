@@ -87,6 +87,6 @@ spec:
     service:
       pipelines:
         profiles:
-          exporters: [otlp_http/pyroscope]
+          exporters: [otlp_grpc/pyroscope]
           processors: [k8s_attributes]
           receivers: [profiling]
