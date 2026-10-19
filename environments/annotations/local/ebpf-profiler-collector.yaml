@@ -57,6 +57,12 @@ spec:
       profiling:
         samples_per_second: 97
         pid_namespace_translation_mode: recursive
+        # Processes younger than this are skipped: samples taken while a process
+        # is still starting (or has already exited) lack reliable /proc metadata,
+        # which Pyroscope's OTLP ingestion rejects as malformed (empty label
+        # name), poisoning the whole export batch. Dropping them at the source
+        # keeps bad samples from ever being sent.
+        filter_min_process_age: 5s
     exporters:
       otlp_grpc/pyroscope:
         endpoint: pyroscope.observability.svc.cluster.local:4040
