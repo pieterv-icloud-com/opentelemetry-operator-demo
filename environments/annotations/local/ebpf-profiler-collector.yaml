@@ -59,7 +59,7 @@ spec:
         pid_namespace_translation_mode: recursive
     exporters:
       otlp_grpc/pyroscope:
-        endpoint: pyroscope.observability.svc.cluster.local
+        endpoint: pyroscope.observability.svc.cluster.local:9095
         tls:
           insecure: true
     processors:
