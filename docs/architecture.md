@@ -80,5 +80,7 @@ Tempo and Jaeger, and derives span metrics that join the metrics pipeline.
 Jaeger keeps traces in memory and uses Prometheus for metric queries.
 
 Grafana is configured to query Prometheus, Loki, Tempo, and Pyroscope.
-Currently, the Collector's profiles pipeline exports to the demo's FirePit
-service; no profile export to Pyroscope is configured.
+The Collector's profiles pipeline (diagrammed above) exports to the demo's
+FirePit service. A separate eBPF profiler Collector, deployed as its own
+DaemonSet, captures host-wide profiles via eBPF and exports them to Pyroscope
+over OTLP/HTTP.

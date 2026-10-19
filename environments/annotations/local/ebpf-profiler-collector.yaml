@@ -58,10 +58,10 @@ spec:
         samples_per_second: 97
         pid_namespace_translation_mode: recursive
     exporters:
-      otlp_grpc/pyroscope:
-        endpoint: pyroscope.observability.svc.cluster.local:9095
-        tls:
-          insecure: true
+      # Pyroscope only implements the OTLP profiles ingest route on its HTTP
+      # server (port 4040); the gRPC port (9095) does not serve this service.
+      otlp_http/pyroscope:
+        endpoint: http://pyroscope.observability.svc.cluster.local:4040
     processors:
       k8s_attributes:
         auth_type: serviceAccount
@@ -87,6 +87,6 @@ spec:
     service:
       pipelines:
         profiles:
-          exporters: [otlp_grpc/pyroscope]
+          exporters: [otlp_http/pyroscope]
           processors: [k8s_attributes]
           receivers: [profiling]
