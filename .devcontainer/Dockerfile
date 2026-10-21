@@ -3,7 +3,7 @@ ARG VARIANT="bookworm"
 FROM mcr.microsoft.com/devcontainers/base:dev-${VARIANT}
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends make build-essential curl wget python3 python3-pip cmake coreutils jp2a dnsutils podman zsh
+    && apt-get -y install --no-install-recommends make build-essential curl wget python3 python3-pip cmake coreutils jp2a dnsutils podman zsh dbus-bin dbus-user-session gnome-keyring libsecret-tools
 
 # Switch User to the user we will be running the devcontainer as
 ARG USERNAME=vscode
