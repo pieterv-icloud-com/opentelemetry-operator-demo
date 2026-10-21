@@ -14,7 +14,8 @@
         "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
     ],
     "containerEnv": {
-        "WORKSPACE_FOLDER": "${containerWorkspaceFolder}"
+        "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+        "GRAFANA_URL": "http://localhost:3000"
     },
     "customizations": {
         "vscode": {
@@ -52,7 +53,10 @@
             "moby": "false",
             "version": "latest"
         },
-        "ghcr.io/devcontainers/features/github-cli:1": {
+        "ghcr.io/dopplerhq/devcontainer-features/doppler-cli": {
+            "version": "latest"
+        },        
+        "ghcr.io/devcontainers/features/github-cli:1.1.3": {
             "version": "latest"
         },
         "ghcr.io/dhoeric/features/k9s:1": {
@@ -68,7 +72,7 @@
         "ghcr.io/guiyomh/features/just:0": {
             "version": "latest"
         },
-        "ghcr.io/devcontainers/features/node:2": {
+        "ghcr.io/devcontainers/features/node:2.1.1": {
             "version": "lts"
         },
         "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
