@@ -1,8 +1,11 @@
 {
     "mcpServers": {
         "grafana": {
-            "command": "secretspec run -- uvx",
+            "command": "secretspec",
             "args": [
+                "run",
+                "--",
+                "uvx",
                 "mcp-grafana"
             ]
         }
