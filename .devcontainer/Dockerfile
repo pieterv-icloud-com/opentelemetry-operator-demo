@@ -19,3 +19,6 @@ RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME \
 ARG USERNAME=vscode
 RUN printf '%s\n' "export HISTFILE=/commandhistory/.bash_history" "export PROMPT_COMMAND='history -a'" >> "/home/$USERNAME/.bashrc" \
     && printf '%s\n' "export HISTFILE=/commandhistory/.zsh_history" "export HIST_SAVE_BY_COPY=1" "setopt APPEND_HISTORY" "setopt INC_APPEND_HISTORY" >> "/home/$USERNAME/.zshrc"
+
+# Install SecretSpec CLI
+RUN curl -sSL https://install.secretspec.dev | sh

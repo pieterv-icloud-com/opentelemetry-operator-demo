@@ -52,10 +52,7 @@
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
             "moby": "false",
             "version": "latest"
-        },
-        "ghcr.io/dopplerhq/devcontainer-features/doppler-cli": {
-            "version": "latest"
-        },        
+        },       
         "ghcr.io/devcontainers/features/github-cli:1.1.3": {
             "version": "latest"
         },
