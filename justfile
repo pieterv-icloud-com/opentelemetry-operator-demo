@@ -143,9 +143,6 @@ cluster-grafana:
 
     GRAFANA_USERNAME=$(kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{.data.admin-user}' | base64 --decode)
     GRAFANA_PASSWORD=$(kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{.data.admin-password}' | base64 --decode)
-
-    secretspec set GRAFANA_USERNAME "$GRAFANA_USERNAME" --provider keyring
-    secretspec set GRAFANA_PASSWORD "$GRAFANA_PASSWORD" --provider keyring
     
     echo "Username: ${GRAFANA_USERNAME}"
     echo "Password: ${GRAFANA_PASSWORD}"
