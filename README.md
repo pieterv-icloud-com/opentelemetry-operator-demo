@@ -5,7 +5,8 @@
 A local Kubernetes demo environment for exploring the [OpenTelemetry Operator](https://opentelemetry.io/docs/platforms/kubernetes/operator/) and
 the [OpenTelemetry Demo](https://opentelemetry.io/docs/demo) application. The cluster and its add-ons are managed with
 `kind`, Argo CD, Helm, and Kustomize. The observability stack includes
-Prometheus/Grafana, Loki, Tempo, Pyroscope, and Jaeger.
+Prometheus/Grafana, Loki, Tempo, Pyroscope (fed by an eBPF profiler), and
+Jaeger.
 
 ## Getting started
 
@@ -74,14 +75,21 @@ running while using the corresponding UI. Stop a port-forward with `Ctrl+C`.
 - `environments/bootstrap/` — Argo CD configuration, project, repository
   credentials, and applications.
 - `environments/overlays/` — Helm-backed infrastructure and demo applications.
-- `environments/annotations/` — OpenTelemetry Collector configuration,
-  permissions, Jaeger configuration, and Grafana dashboards.
+- `environments/annotations/` — OpenTelemetry Collector configuration
+  (including the eBPF profiler Collector), permissions, Jaeger configuration,
+  and Grafana dashboards.
 - [`docs/architecture.md`](docs/architecture.md) — telemetry data flow through
   the demo and observability stack.
 - `kind-config.yaml` — Local Kubernetes cluster configuration.
 - `justfile` — Setup, cluster lifecycle, and port-forward recipes.
-- `.devcontainer/` — VS Code Dev Container tooling and initialization.
+- `secretspec.toml` — SecretSpec mappings for the Grafana credentials.
+- `.mcp.json` — Grafana MCP server configuration.
+- `.devcontainer/` — VS Code Dev Container tooling, initialization, and
+  SecretSpec setup.
+- `.github/` — Dependabot configuration for Dev Container updates and agent
+  skills, including the Helm chart update checker.
 - `.vscode/tasks.json` — VS Code tasks for the `just` recipes.
+- `AGENTS.md` — Instructions for AI agents working in this repository.
 
 ## Cleaning up
 
