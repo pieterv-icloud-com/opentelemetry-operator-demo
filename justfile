@@ -98,6 +98,18 @@ cluster-create: gh-auth cluster-delete
     kubectl config set-cluster "kind-$CLUSTER_NAME" \
         --server="${kubeconfig_server/0.0.0.0/$gateway}"
 
+    # Kind forwards CoreDNS to the node's resolv.conf, which fails for pods in this devcontainer.
+    coredns_corefile="$(kubectl -n kube-system get configmap coredns -o jsonpath='{.data.Corefile}')"
+    if [[ "$coredns_corefile" != *"forward . /etc/resolv.conf"* ]]; then
+        echo "Unexpected CoreDNS forward configuration; not patching" >&2
+        exit 1
+    fi
+    kubectl -n kube-system get configmap coredns -o yaml \
+        | sed 's|forward \. /etc/resolv\.conf|forward . 8.8.8.8 1.1.1.1|' \
+        | kubectl replace -f -
+    kubectl -n kube-system rollout restart deployment coredns
+    kubectl -n kube-system rollout status deployment coredns --timeout=180s
+
     # Attach this devcontainer to the kind network so LoadBalancer IPs are reachable directly.
     podman network connect kind "$(hostname)" >/dev/null 2>&1 || true
 
