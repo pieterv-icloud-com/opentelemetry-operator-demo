@@ -117,7 +117,7 @@ cluster-create: gh-auth cluster-delete
     cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$workdir/bootstrap/"
     just _replace-tokens "$workdir/bootstrap"
 
-    helm install argocd --create-namespace --namespace argocd --hide-notes argo/argo-cd
+    helm install argocd --create-namespace --namespace argocd --hide-notes -f argocd-values.yaml argo/argo-cd
 
     kubectl apply -k "$workdir/bootstrap"
 
