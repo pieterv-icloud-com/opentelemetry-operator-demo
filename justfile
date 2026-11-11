@@ -47,6 +47,33 @@ _replace-tokens:
                 )
             path.write_bytes(contents)
 
+_cluster-check-podman:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    : "${CONTAINER_HOST:?Set CONTAINER_HOST to the host Podman API socket}"
+    if ! podman info >/dev/null; then
+        echo "The host Podman service is unavailable; check its socket and the dev container's socket mount." >&2
+        exit 1
+    fi
+
+_cluster-check-provider-socket:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    : "${CONTAINER_HOST:?Set CONTAINER_HOST to the host Podman API socket}"
+    : "${PODMAN_HOST_SOCKET:?Set PODMAN_HOST_SOCKET to the socket path on the Podman host}"
+    if [[ "$CONTAINER_HOST" != unix:///* || ! -S "${CONTAINER_HOST#unix://}" ]]; then
+        echo "Podman API socket not found at $CONTAINER_HOST; start the host Podman socket and rebuild the dev container." >&2
+        exit 1
+    fi
+    if ! podman --remote --url "$CONTAINER_HOST" info >/dev/null; then
+        echo "Podman API service at $CONTAINER_HOST is not responding." >&2
+        exit 1
+    fi
+
+_cluster-preflight: _cluster-check-podman _cluster-check-provider-socket
+
 
 # Create the local kind cluster
 [env("CLUSTER_ENVIRONMENT", "local")]
@@ -54,68 +81,69 @@ _replace-tokens:
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [env("CLOUD_PROVIDER_KIND_IMAGE", "registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0")]
 [group('cluster')]
-cluster-create: gh-auth cluster-delete
+cluster-create: _cluster-preflight gh-auth cluster-delete
     #!/usr/bin/env bash
+    set -euo pipefail
 
     export CLUSTER_GITHUB_USER="$(gh api user --jq .login)"
     export CLUSTER_GITHUB_TOKEN="$(gh auth token)"
-    tmpdir="${TMPDIR:-/tmp}"
+    tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/otel-bootstrap.XXXXXXXX")"
+    trap 'rm -rf -- "$tmpdir"' EXIT
 
-    kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
+    KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
+
+    podman network connect kind "$(hostname)"
+    KIND_EXPERIMENTAL_PROVIDER=podman kind get kubeconfig --internal --name "$CLUSTER_NAME" > "$tmpdir/kind-internal.yaml"
+    kubeconfig_server="$(kubectl config view --kubeconfig "$tmpdir/kind-internal.yaml" --minify -o jsonpath='{.clusters[0].cluster.server}')"
+    : "${kubeconfig_server:?Kind did not provide an internal Kubernetes API endpoint}"
+    kubectl config set-cluster "kind-$CLUSTER_NAME" --server="$kubeconfig_server"
 
     just cluster-provider
 
-    # Kind writes 0.0.0.0 to kubeconfig; use the Docker gateway from this container.
-    kubeconfig_server="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
-    docker_gateway="$(ip route | awk '$1 == "default" {print $3; exit}')"
-    kubectl config set-cluster "kind-$CLUSTER_NAME" \
-        --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
-
-    # Attach this devcontainer to the kind network so LoadBalancer IPs are reachable directly.
-    docker network connect kind "$(hostname)" >/dev/null 2>&1 || true
-
+    export TMPDIR="$tmpdir"
     mkdir -p "$tmpdir/bootstrap"
     cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap/"
     just _replace-tokens
 
     helm install argocd --create-namespace --namespace argocd --hide-notes argo/argo-cd
 
-    kubectl apply -k $tmpdir/bootstrap
-
-    rm -rf "$tmpdir/bootstrap"
+    kubectl apply -k "$tmpdir/bootstrap"
 
 # Run cloud-provider-kind for the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [env("CLOUD_PROVIDER_KIND_IMAGE", "registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0")]
 [group('cluster')]
-cluster-provider:
+cluster-provider: _cluster-check-provider-socket
     #!/usr/bin/env bash
     set -euo pipefail
 
     provider_container="cloud-provider-kind-${CLUSTER_NAME}"
-    docker rm --force "$provider_container" >/dev/null 2>&1 || true
-    docker run --detach \
+    podman rm --force --ignore "$provider_container" >/dev/null
+    podman run --detach \
         --rm \
         --name "$provider_container" \
         --network kind \
         --env KIND_EXPERIMENTAL_PROVIDER=docker \
         --env KIND_EXPERIMENTAL_DOCKER_NETWORK=kind \
-        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume "$PODMAN_HOST_SOCKET:/var/run/docker.sock" \
         "$CLOUD_PROVIDER_KIND_IMAGE" \
         --enable-lb-port-mapping
 
 # Delete the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [group('cluster')]
-cluster-delete:
+cluster-delete: _cluster-check-podman
     #!/usr/bin/env bash
+    set -euo pipefail
 
-    docker rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
-    docker ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r docker rm --force >/dev/null
-    docker network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
+    clusters="$(KIND_EXPERIMENTAL_PROVIDER=podman kind get clusters)"
 
-    if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
-        kind delete cluster --name "$CLUSTER_NAME"
+    podman rm --force --ignore "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null
+    podman ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r podman rm --force >/dev/null
+    podman network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
+
+    if grep -Fxq "$CLUSTER_NAME" <<< "$clusters"; then
+        KIND_EXPERIMENTAL_PROVIDER=podman kind delete cluster --name "$CLUSTER_NAME"
     fi
 
 # Open ArgoCD

@@ -15,11 +15,16 @@
 		]	        
     },
     "mounts": [
-        "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
+        "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached",
+        "source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/podman-host.sock,type=bind",
+        // Use tmpfs for /tmp - ensures fresh permissions on each container start
+		"type=tmpfs,destination=/tmp,tmpfs-mode=1777"
     ],
     "containerEnv": {
         "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
-        "GRAFANA_URL": "http://localhost:3000"
+        "GRAFANA_URL": "http://localhost:3000",
+        "CONTAINER_HOST": "unix:///var/run/podman-host.sock",
+        "PODMAN_HOST_SOCKET": "${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock"
     },
     "containerUser": "vscode",
     "customizations": {
@@ -54,10 +59,6 @@
     },
     // See: https://containers.dev/features
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1.10.2": {
-            "moby": "false",
-            "version": "latest"
-        },       
         "ghcr.io/devcontainers/features/github-cli:1.1.3": {
             "version": "latest"
         },
@@ -86,12 +87,13 @@
         "localhost:8089",
         "localhost:16686",
         "localhost:4000",
+        "localhost:8080",
         "localhost:8082"
     ],
     // Clean up stale devcontainer temp directories before starting (Podman compatibility)
 	"initializeCommand": ".devcontainer/initialize.sh",
-	// Required for Podman rootless - keeps UID mapping consistent
-	"updateRemoteUserUID": true,
+	// Use the explicit mapping below instead of the tooling's automatic UID mapping.
+	"updateRemoteUserUID": false,
     "portsAttributes": {
         "3000": {
             "label": "Grafana",
@@ -113,6 +115,11 @@
             "protocol": "http",
             "onAutoForward": "silent"
         },
+        "8080": {
+            "label": "Demo ingress",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
         "8082": {
             "label": "ArgoCD",
             "protocol": "https",
@@ -123,6 +130,8 @@
 	"remoteUser": "vscode",
 	"runArgs": [
 		"--security-opt",
-		"label=disable"
+		"label=disable",
+		"--userns=keep-id:uid=1000,gid=1000",
+		"--network=bridge"
 	]    
 }

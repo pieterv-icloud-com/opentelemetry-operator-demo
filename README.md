@@ -10,8 +10,21 @@ Jaeger.
 
 ## Getting started
 
-Open this repository in VS Code and choose **Reopen in Container**. The
-Dev Container installs the project tools and forwards the local UI ports.
+On the Linux host, enable the rootless Podman API socket before opening the
+Dev Container:
+
+```sh
+systemctl --user enable --now podman.socket
+echo "$XDG_RUNTIME_DIR"
+```
+
+`XDG_RUNTIME_DIR` must be set in the environment that launches VS Code; the
+container mounts its `podman/podman.sock`. Then open this repository in VS Code
+and choose **Reopen in Container** (or **Rebuild Container** if it is already
+open). The Dev Container installs the project tools and forwards the local UI
+ports. Its Podman client uses the host engine, not a nested engine. Rootless
+kind also requires the host prerequisites described in the
+[kind rootless guide](https://kind.sigs.k8s.io/docs/user/rootless/).
 
 Project tasks are available both as `just` recipes and as VS Code tasks. Run
 them from the terminal with `just <task-name>`, or choose **Terminal > Run
@@ -27,17 +40,29 @@ Create the local cluster and bootstrap Argo CD by running `cluster-create`:
 just cluster-create
 ```
 
+The host Podman socket grants control over the host user's containers. The
+`cluster-create` preflight checks that it is reachable before deleting an
+existing cluster. `cloud-provider-kind` uses the same host socket.
+
 Argo CD then deploys the applications defined under `environments/`. Its Git
 source tracks the current branch by default (`CLUSTER_BRANCH`), so that branch
 must be available in the configured Git remote for Argo CD to sync it.
 
 ## Accessing the demo site
 
+Rootless Podman network addresses are not necessarily reachable from the host.
+After Argo CD deploys ingress-nginx, forward the ingress service from the Dev
+Container and leave the command running:
+
+```sh
+kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8080:80
+```
+
 Add the following entry to your local machine's hosts file to access the demo
-site at <http://otel-demo.local>:
+site at <http://otel-demo.local:8080>:
 
 ```text
-172.18.0.8 otel-demo.local
+127.0.0.1 otel-demo.local
 ```
 
 On Linux and macOS, the hosts file is `/etc/hosts`. On Windows, it is
