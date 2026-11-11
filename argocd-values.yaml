@@ -1,0 +1,6 @@
+repoServer:
+  replicas: 3
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
