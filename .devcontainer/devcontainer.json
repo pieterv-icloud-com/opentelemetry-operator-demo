@@ -8,7 +8,11 @@
         "args": {
             "VARIANT": "trixie",
             "USERNAME": "vscode"
-        }
+        },
+		"options": [
+			"--security-opt",
+			"label=disable"
+		]	        
     },
     "mounts": [
         "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
@@ -17,6 +21,7 @@
         "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
         "GRAFANA_URL": "http://localhost:3000"
     },
+    "containerUser": "vscode",
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
@@ -49,7 +54,7 @@
     },
     // See: https://containers.dev/features
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1.10.2": {
             "moby": "false",
             "version": "latest"
         },       
@@ -62,7 +67,7 @@
         "ghcr.io/mpriscella/features/kind:1": {
             "version": "latest"
         },
-        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1.3.2": {
             "version": "latest",
             "minikube": "none"
         },
@@ -83,6 +88,10 @@
         "localhost:4000",
         "localhost:8082"
     ],
+    // Clean up stale devcontainer temp directories before starting (Podman compatibility)
+	"initializeCommand": ".devcontainer/initialize.sh",
+	// Required for Podman rootless - keeps UID mapping consistent
+	"updateRemoteUserUID": true,
     "portsAttributes": {
         "3000": {
             "label": "Grafana",
@@ -110,5 +119,10 @@
             "onAutoForward": "silent"
         }
     },
-    "postCreateCommand": ".devcontainer/postcreate.sh"
+    "postCreateCommand": ".devcontainer/postcreate.sh",
+	"remoteUser": "vscode",
+	"runArgs": [
+		"--security-opt",
+		"label=disable"
+	]    
 }
