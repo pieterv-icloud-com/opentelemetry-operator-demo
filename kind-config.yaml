@@ -9,7 +9,8 @@ kubeadmConfigPatches:
     kind: ClusterConfiguration
     apiServer:
       certSANs:
-        # This is the Docker host gateway visible from the dev container.
+        # cluster-create replaces the placeholder with the container's gateway.
+        - "KIND_API_SERVER_GATEWAY"
         - "172.17.0.1"
 nodes:
   - role: control-plane

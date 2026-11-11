@@ -26,12 +26,14 @@ gh-auth:
     fi
 
 # Generic token replacement
-_replace-tokens:
+[positional-arguments]
+_replace-tokens bootstrap:
     #!/usr/bin/env python3
     import os
+    import sys
     from pathlib import Path
 
-    bootstrap = Path(os.environ.get("TMPDIR", "/tmp")) / "bootstrap"
+    bootstrap = Path(sys.argv[1])
     tokens = {
         name: value
         for name, value in os.environ.items()
@@ -56,33 +58,56 @@ _replace-tokens:
 [group('cluster')]
 cluster-create: gh-auth cluster-delete
     #!/usr/bin/env bash
+    set -euo pipefail
 
     export CLUSTER_GITHUB_USER="$(gh api user --jq .login)"
     export CLUSTER_GITHUB_TOKEN="$(gh auth token)"
-    tmpdir="${TMPDIR:-/tmp}"
 
-    kind create cluster --config kind-config.yaml --name $CLUSTER_NAME
+    workdir="$(mktemp -d "${TMPDIR:-/tmp}/cluster-create.XXXXXXXX")"
+    trap 'rm -rf "$workdir"' EXIT
+
+    gateway="$(ip -4 route show default | awk '$1 == "default" && $2 == "via" {print $3; exit}')"
+    if [[ -z "$gateway" ]]; then
+        echo "Cannot determine the container's default IPv4 gateway" >&2
+        exit 1
+    fi
+
+    python3 - "$gateway" "$workdir/kind-config.yaml" <<'PY'
+    import ipaddress
+    import sys
+    from pathlib import Path
+
+    gateway = str(ipaddress.IPv4Address(sys.argv[1]))
+    config = Path("kind-config.yaml").read_text()
+    placeholder = "KIND_API_SERVER_GATEWAY"
+    if config.count(placeholder) != 1:
+        sys.exit("kind-config.yaml must contain exactly one API server gateway placeholder")
+    Path(sys.argv[2]).write_text(config.replace(placeholder, gateway))
+    PY
+
+    kind create cluster --config "$workdir/kind-config.yaml" --name "$CLUSTER_NAME"
 
     just cluster-provider
 
-    # Kind writes 0.0.0.0 to kubeconfig; use the Docker gateway from this container.
-    kubeconfig_server="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
-    docker_gateway="$(ip route | awk '$1 == "default" {print $3; exit}')"
+    # Use the same gateway in kubeconfig and the API server certificate.
+    kubeconfig_server="$(kubectl config view --context "kind-$CLUSTER_NAME" --minify -o jsonpath='{.clusters[0].cluster.server}')"
+    if [[ "$kubeconfig_server" != https://0.0.0.0:* ]]; then
+        echo "Unexpected kind API server URL: $kubeconfig_server" >&2
+        exit 1
+    fi
     kubectl config set-cluster "kind-$CLUSTER_NAME" \
-        --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
+        --server="${kubeconfig_server/0.0.0.0/$gateway}"
 
     # Attach this devcontainer to the kind network so LoadBalancer IPs are reachable directly.
     podman network connect kind "$(hostname)" >/dev/null 2>&1 || true
 
-    mkdir -p "$tmpdir/bootstrap"
-    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap/"
-    just _replace-tokens
+    mkdir -p "$workdir/bootstrap"
+    cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$workdir/bootstrap/"
+    just _replace-tokens "$workdir/bootstrap"
 
     helm install argocd --create-namespace --namespace argocd --hide-notes argo/argo-cd
 
-    kubectl apply -k $tmpdir/bootstrap
-
-    rm -rf "$tmpdir/bootstrap"
+    kubectl apply -k "$workdir/bootstrap"
 
 # Run cloud-provider-kind for the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]

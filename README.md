@@ -27,6 +27,11 @@ Create the local cluster and bootstrap Argo CD by running `cluster-create`:
 just cluster-create
 ```
 
+The task selects the dev container's default IPv4 gateway before creating the
+cluster and uses it both in the API server certificate and the kubeconfig.
+`kind-config.yaml` contains a gateway placeholder that the task fills in; use
+the task rather than passing that file directly to `kind create cluster`.
+
 Argo CD then deploys the applications defined under `environments/`. Its Git
 source tracks the current branch by default (`CLUSTER_BRANCH`), so that branch
 must be available in the configured Git remote for Argo CD to sync it.
