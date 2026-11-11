@@ -72,7 +72,7 @@ cluster-create: gh-auth cluster-delete
         --server="${kubeconfig_server/0.0.0.0/$docker_gateway}"
 
     # Attach this devcontainer to the kind network so LoadBalancer IPs are reachable directly.
-    docker network connect kind "$(hostname)" >/dev/null 2>&1 || true
+    podman network connect kind "$(hostname)" >/dev/null 2>&1 || true
 
     mkdir -p "$tmpdir/bootstrap"
     cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$tmpdir/bootstrap/"
@@ -93,8 +93,8 @@ cluster-provider:
     set -euo pipefail
 
     provider_container="cloud-provider-kind-${CLUSTER_NAME}"
-    docker rm --force "$provider_container" >/dev/null 2>&1 || true
-    docker run --detach \
+    podman rm --force "$provider_container" >/dev/null 2>&1 || true
+    podman run --detach \
         --rm \
         --name "$provider_container" \
         --network kind \
@@ -110,9 +110,9 @@ cluster-provider:
 cluster-delete:
     #!/usr/bin/env bash
 
-    docker rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
-    docker ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r docker rm --force >/dev/null
-    docker network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
+    podman rm --force "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+    podman ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r podman rm --force >/dev/null
+    podman network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
 
     if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
         kind delete cluster --name "$CLUSTER_NAME"
