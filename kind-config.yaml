@@ -2,16 +2,7 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: opentelemetry-operator-demo
 networking:
-  # The API is consumed from the VS Code container, not Docker's loopback.
-  apiServerAddress: "0.0.0.0"
-kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    apiServer:
-      certSANs:
-        # cluster-create replaces the placeholder with the container's gateway.
-        - "KIND_API_SERVER_GATEWAY"
-        - "172.17.0.1"
+  apiServerAddress: "127.0.0.1"
 nodes:
   - role: control-plane
   - role: worker

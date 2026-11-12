@@ -10,8 +10,19 @@ Jaeger.
 
 ## Getting started
 
-Open this repository in VS Code and choose **Reopen in Container**. The
-Dev Container installs the project tools and forwards the local UI ports.
+This setup uses rootless Podman on the host. Start its API socket before opening
+the Dev Container:
+
+```sh
+systemctl --user enable --now podman.socket
+echo "$XDG_RUNTIME_DIR"
+```
+
+`XDG_RUNTIME_DIR` must be set in the environment launching VS Code. Open this
+repository and choose **Reopen in Container**, or **Rebuild Container** if it is
+already open. The container uses the host Podman service, and the mounted
+socket grants control over the host user's containers. Rootless kind also
+requires the prerequisites in the [kind rootless guide](https://kind.sigs.k8s.io/docs/user/rootless/).
 
 Project tasks are available both as `just` recipes and as VS Code tasks. Run
 them from the terminal with `just <task-name>`, or choose **Terminal > Run
@@ -27,10 +38,9 @@ Create the local cluster and bootstrap Argo CD by running `cluster-create`:
 just cluster-create
 ```
 
-The task selects the dev container's default IPv4 gateway before creating the
-cluster and uses it both in the API server certificate and the kubeconfig.
-`kind-config.yaml` contains a gateway placeholder that the task fills in; use
-the task rather than passing that file directly to `kind create cluster`.
+The task checks the host Podman socket before deleting an existing cluster,
+then connects the dev container to the kind network and uses kind's internal API
+endpoint.
 
 Argo CD then deploys the applications defined under `environments/`. Its Git
 source tracks the current branch by default (`CLUSTER_BRANCH`), so that branch
@@ -38,11 +48,18 @@ must be available in the configured Git remote for Argo CD to sync it.
 
 ## Accessing the demo site
 
+Rootless Podman network addresses are not necessarily reachable from the host.
+After ingress-nginx is deployed, forward its service from the Dev Container:
+
+```sh
+kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8080:80
+```
+
 Add the following entry to your local machine's hosts file to access the demo
-site at <http://otel-demo.local>:
+site at <http://otel-demo.local:8080>:
 
 ```text
-172.18.0.8 otel-demo.local
+127.0.0.1 otel-demo.local
 ```
 
 On Linux and macOS, the hosts file is `/etc/hosts`. On Windows, it is

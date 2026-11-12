@@ -8,15 +8,33 @@
         "args": {
             "VARIANT": "trixie",
             "USERNAME": "vscode"
-        }
+        },
+        "options": [
+            "--security-opt",
+            "label=disable"
+        ]
     },
-    "mounts": [
-        "source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached"
-    ],
+	"mounts": [
+		"source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached",
+		"source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/podman-host.sock,type=bind",
+		// Use tmpfs for /tmp - ensures fresh permissions on each container start
+		"type=tmpfs,destination=/tmp,tmpfs-mode=1777"
+	],
     "containerEnv": {
         "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
-        "GRAFANA_URL": "http://localhost:3000"
+        "GRAFANA_URL": "http://localhost:3000",
+        "CONTAINER_HOST": "unix:///var/run/podman-host.sock",
+        "PODMAN_HOST_SOCKET": "${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock"
     },
+    "containerUser": "vscode",
+    "remoteUser": "vscode",
+    "updateRemoteUserUID": false,
+    "runArgs": [
+        "--security-opt",
+        "label=disable",
+        "--userns=keep-id:uid=1000,gid=1000",
+        "--network=bridge"
+    ],
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
@@ -49,10 +67,6 @@
     },
     // See: https://containers.dev/features
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-            "moby": "false",
-            "version": "latest"
-        },       
         "ghcr.io/devcontainers/features/github-cli:1.1.3": {
             "version": "latest"
         },
@@ -81,6 +95,7 @@
         "localhost:8089",
         "localhost:16686",
         "localhost:4000",
+        "localhost:8080",
         "localhost:8082"
     ],
     "portsAttributes": {
@@ -101,6 +116,11 @@
         },
         "4000": {
             "label": "Flagd Configurator",
+            "protocol": "http",
+            "onAutoForward": "silent"
+        },
+        "8080": {
+            "label": "Demo ingress",
             "protocol": "http",
             "onAutoForward": "silent"
         },
