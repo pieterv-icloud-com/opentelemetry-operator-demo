@@ -160,8 +160,13 @@ cluster-argocd:
     echo "Username: admin"
     echo "Password: ${ARGOCD_PASSWORD}"
     echo "URL: http://localhost:8082"
-    
-    kubectl port-forward svc/argocd-server -n argocd 8082:80
+
+    # kubectl port-forward exits when the tunnel to the pod drops; reconnect instead of failing.
+    while true; do
+        kubectl port-forward svc/argocd-server -n argocd 8082:80 || true
+        echo "Port-forward dropped, reconnecting in 2s..."
+        sleep 2
+    done
 
 # Open Grafana at http://localhost:3000
 [group('cluster')]
