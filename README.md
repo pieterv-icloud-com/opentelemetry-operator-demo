@@ -65,7 +65,7 @@ labels match the names below; to list recipes in the terminal, run `just
 | `cluster-create` | Recreate the `kind` cluster, start `cloud-provider-kind`, install Argo CD, and apply the bootstrap manifests. |
 | `cluster-delete` | Stop the local cloud provider and delete the configured `kind` cluster. |
 | `cluster-provider` | Start `cloud-provider-kind` for the configured cluster. |
-| `cluster-argocd` | Print the initial Argo CD admin credentials and port-forward its UI to <https://localhost:8082>. |
+| `cluster-argocd` | Print the initial Argo CD admin credentials and port-forward its UI to <http://localhost:8082>. |
 | `cluster-grafana` | Print the Grafana credentials and port-forward Grafana to <http://localhost:3000>. |
 | `cluster-jaeger` | Port-forward Jaeger to <http://localhost:16686>. |
 | `cluster-load-generator` | Port-forward the OpenTelemetry Demo load generator to <http://localhost:8089>. |

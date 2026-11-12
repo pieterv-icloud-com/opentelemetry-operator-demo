@@ -106,7 +106,7 @@
         },
         "8082": {
             "label": "ArgoCD",
-            "protocol": "https",
+            "protocol": "http",
             "onAutoForward": "silent"
         }
     },

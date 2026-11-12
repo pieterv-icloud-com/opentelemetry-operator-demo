@@ -167,8 +167,9 @@ cluster-argocd:
     
     echo "Username: admin"
     echo "Password: ${ARGOCD_PASSWORD}"
+    echo "URL: http://localhost:8082"
     
-    kubectl port-forward svc/argocd-server -n argocd 8082:443
+    kubectl port-forward svc/argocd-server -n argocd 8082:80
 
 # Open Grafana at http://localhost:3000
 [group('cluster')]
