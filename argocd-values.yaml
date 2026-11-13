@@ -1,6 +1,10 @@
 configs:
   params:
     server.insecure: "true"
+redis-ha:
+  enabled: true
+  hardAntiAffinity: true
+  replicas: 3
 controller:
   hostNetwork: true
   dnsPolicy: ClusterFirstWithHostNet
