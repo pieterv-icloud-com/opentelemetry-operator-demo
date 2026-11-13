@@ -95,8 +95,10 @@ cluster-create: _cluster-check-podman gh-auth cluster-delete
     cp -R "environments/bootstrap/$CLUSTER_ENVIRONMENT/." "$workdir/bootstrap/"
     just _replace-tokens "$workdir/bootstrap"
 
-    helm install argocd --create-namespace --version 10.17.2 --namespace argocd --hide-notes --wait=watcher --wait-for-jobs -f argocd-values.yaml argo/argo-cd
+    # Don't block on Helm readiness: a slow Redis HA rollout would otherwise skip the bootstrap below.
+    helm install argocd --create-namespace --version 10.17.2 --namespace argocd --hide-notes -f argocd-values.yaml argo/argo-cd
 
+    kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=120s
     kubectl apply -k "$workdir/bootstrap"
 
 # Run cloud-provider-kind for the local kind cluster
