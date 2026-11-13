@@ -44,6 +44,11 @@ spec:
               instrumentation.opentelemetry.io/inject-java: "observability/opentelemetry-collector"
             useDefault:
               env: false
+            resources:
+              requests:
+                memory: 1Gi
+              limits:
+                memory: 1Gi
             env:
               - name: AD_PORT
                 value: "8080"
@@ -66,12 +71,10 @@ spec:
               env: false
             resources:
               requests:
-                memory: 512Mi
+                memory: 1Gi
               limits:
-                memory: 512Mi
+                memory: 1Gi
             env:
-              - name: JDK_JAVA_OPTIONS
-                value: "-XX:MaxRAMPercentage=50"
               - name: KAFKA_ADDR
                 value: kafka:9092
               - name: KAFKA_TOPIC
