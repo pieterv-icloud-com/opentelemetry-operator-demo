@@ -1,7 +1,15 @@
 configs:
   params:
     server.insecure: "true"
+controller:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+server:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
 repoServer:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
   replicas: 3
   topologySpreadConstraints:
     - maxSkew: 1
