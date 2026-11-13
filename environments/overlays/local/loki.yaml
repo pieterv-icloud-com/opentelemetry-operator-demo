@@ -72,8 +72,6 @@ spec:
           service:
             type: ClusterIP
             port: 80
-        minio:
-          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
