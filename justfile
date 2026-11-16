@@ -71,7 +71,7 @@ _cluster-check-podman:
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]
 [env("CLOUD_PROVIDER_KIND_IMAGE", "registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0")]
 [group('cluster')]
-cluster-create: _cluster-check-podman gh-auth cluster-delete
+cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth cluster-delete
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -80,12 +80,6 @@ cluster-create: _cluster-check-podman gh-auth cluster-delete
 
     workdir="$(mktemp -d "${TMPDIR:-/tmp}/cluster-create.XXXXXXXX")"
     trap 'rm -rf "$workdir"' EXIT
-
-    sysctl_config=/etc/sysctl.d/99-kptr-restrict.conf
-    if ! sudo grep -Eq '^[[:space:]]*kernel\.kptr_restrict[[:space:]]*=[[:space:]]*1([[:space:]]*(#.*)?)?$' "$sysctl_config" 2>/dev/null; then
-        printf '%s\n' 'kernel.kptr_restrict=1' | sudo tee -a "$sysctl_config" >/dev/null
-    fi
-    sudo sysctl --load "$sysctl_config"
 
     KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
 
@@ -106,6 +100,15 @@ cluster-create: _cluster-check-podman gh-auth cluster-delete
 
     kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=120s
     kubectl apply -k "$workdir/bootstrap"
+
+_cluster-configure-kptr-restrict:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    sysctl_config=/etc/sysctl.d/99-kptr-restrict.conf
+    if ! sudo grep -Eq '^[[:space:]]*kernel\.kptr_restrict[[:space:]]*=[[:space:]]*1([[:space:]]*(#.*)?)?$' "$sysctl_config" 2>/dev/null; then
+        printf '%s\n' 'kernel.kptr_restrict=1' | sudo tee -a "$sysctl_config" >/dev/null
+    fi
 
 # Run cloud-provider-kind for the local kind cluster
 [env("CLUSTER_NAME", "opentelemetry-operator-demo")]

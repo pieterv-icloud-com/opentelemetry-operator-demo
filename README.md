@@ -24,6 +24,10 @@ already open. The container uses the host Podman service, and the mounted
 socket grants control over the host user's containers. Rootless kind also
 requires the prerequisites in the [kind rootless guide](https://kind.sigs.k8s.io/docs/user/rootless/).
 
+`cluster-create` ensures `kernel.kptr_restrict=1` is recorded in the dev
+container's `/etc/sysctl.d/99-kptr-restrict.conf`. This does not change the host
+kernel setting; the dev container cannot apply host-level sysctls.
+
 Project tasks are available both as `just` recipes and as VS Code tasks. Run
 them from the terminal with `just <task-name>`, or choose **Terminal > Run
 Task** in VS Code. The `cluster-create` task runs `gh-auth`; if GitHub CLI
