@@ -85,7 +85,7 @@ cluster-create: _cluster-check-podman gh-auth cluster-delete
     if ! sudo grep -Eq '^[[:space:]]*kernel\.kptr_restrict[[:space:]]*=[[:space:]]*1([[:space:]]*(#.*)?)?$' "$sysctl_config" 2>/dev/null; then
         printf '%s\n' 'kernel.kptr_restrict=1' | sudo tee -a "$sysctl_config" >/dev/null
     fi
-    sudo sysctl --load "$sysctl_config"
+    sudo sysctl --load "$sysctl_co
 
     KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
 
