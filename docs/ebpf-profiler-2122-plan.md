@@ -71,7 +71,7 @@ These steps are verified: `podman --remote --url unix:///var/run/podman-host.soc
   It is non-fatal: the tracer and sched monitor still attach. The host kernel (7.3.1) has `# CONFIG_FTRACE_SYSCALLS is not set`,
   so syscall tracepoints are missing. Optional follow-up: a kernel with `CONFIG_FTRACE_SYSCALLS=y` would enable the prctl monitor.
   Checked: the profiling receiver has no option to skip the prctl monitor. Upstream logs a warning and continues because core profiling is unaffected
-  (`collector/receiver_linux.go:193-199`). The only effect is that prctl-named mappings (`OTEL_CTX`) are discovered later. No repo change is needed.
+  Decision: accept the warning. No repo or host change is planned.
 
 ## Notes
 
