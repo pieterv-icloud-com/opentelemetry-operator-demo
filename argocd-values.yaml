@@ -14,7 +14,7 @@ server:
 repoServer:
   hostNetwork: true
   dnsPolicy: ClusterFirstWithHostNet
-  replicas: 3
+  replicas: 1
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
