@@ -32,17 +32,18 @@ Root cause (per maintainer @florianl, comment 2026-11-18):
 
 ## Host Podman changes (run on the host, not in the repo)
 
-These steps can't run from the dev container. Run them on the host, then rebuild the dev container.
+These steps can't run from the dev container. Run them on the host, then rebuild the dev container. Paths such as `/run/podman/podman.sock` refer to the host; inside the dev container the same socket is at `/var/run/podman-host.sock`.
 
 1. **Enable the system Podman socket.**
    - `podman.socket` exists separately in the system and user systemd managers; these are distinct socket instances, even though they have the same unit name.
    - Run `sudo systemctl enable --now podman.socket`.
-   - Verify with `ls -l /run/podman/podman.sock`. The socket should exist.
+   - Verify **on the host** with `ls -l /run/podman/podman.sock`. The socket should exist. This path doesn't exist inside the dev container.
    - No need to disable the user socket: the Dev Container explicitly mounts `/run/podman/podman.sock`, not the rootless socket under `$XDG_RUNTIME_DIR`.
 2. **Give the dev container user access to the socket.**
    - The socket is owned by root. Your user needs access, usually through the `podman` group.
-   - Check the group owner with `ls -l /run/podman/podman.sock`. Add your user with `sudo usermod -aG podman $USER`, then log out and back in.
-   - Verify with `podman --remote --url unix:///run/podman/podman.sock info`.
+   - Check the group owner **on the host** with `ls -l /run/podman/podman.sock`. Add your user with `sudo usermod -aG podman $USER`, then log out and back in.
+   - Verify **on the host** with `podman --remote --url unix:///run/podman/podman.sock info`.
+   - Verify **inside the dev container** (after step 4) with `podman --url unix:///var/run/podman-host.sock info`. The socket is bind-mounted there from the host. Without the `info` subcommand, Podman prints its help and fails with `missing command 'podman COMMAND'`.
 3. **Set `kernel.kptr_restrict=1` on the host.**
    - Check with `sysctl kernel.kptr_restrict`.
    - Persist it: `echo 'kernel.kptr_restrict=1' | sudo tee /etc/sysctl.d/99-kptr-restrict.conf && sudo sysctl --system`.

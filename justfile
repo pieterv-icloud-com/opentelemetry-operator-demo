@@ -82,6 +82,7 @@ cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth c
     trap 'rm -rf "$workdir"' EXIT
 
     KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
+    just _cluster-configure-network
 
     # 0.0.0.0 resolves to the dev container itself, so point kubectl/helm at the host gateway instead.
     kubectl config set-cluster "kind-$CLUSTER_NAME" --server="https://host.containers.internal:6443"
@@ -97,6 +98,21 @@ cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth c
 
     kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=120s
     kubectl apply -k "$workdir/bootstrap"
+
+# Let the host forward traffic for the kind bridge so nodes can pull images (host FORWARD policy is DROP)
+[env("CLUSTER_NAME", "opentelemetry-operator-demo")]
+_cluster-configure-network: _cluster-check-podman
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    bridge="$(podman network inspect kind | sed -n 's/.*"network_interface": "\([^"]*\)".*/\1/p')"
+    node_image="$(podman inspect "$CLUSTER_NAME-control-plane" | sed -n 's/.*"ImageName": "\([^"]*\)".*/\1/p' | head -1)"
+    podman run --rm --privileged --net=host --pid=host --entrypoint sh "$node_image" -c '
+        for direction in -i -o; do
+            iptables -C FORWARD "$direction" "$1" -j ACCEPT 2>/dev/null ||
+                iptables -I FORWARD "$direction" "$1" -j ACCEPT
+        done
+    ' sh "$bridge"
 
 _cluster-configure-kptr-restrict:
     #!/usr/bin/env bash
