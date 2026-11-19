@@ -33,6 +33,7 @@
         "--security-opt",
         "label=disable",
         "--userns=keep-id:uid=1000,gid=1000",
+        "--group-add=keep-groups",
         "--network=bridge"
     ],
     "customizations": {
