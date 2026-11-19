@@ -5,6 +5,13 @@ networking:
   # Publish on all host interfaces so the dev container can reach the API server.
   apiServerAddress: "0.0.0.0"
   apiServerPort: 6443
+kubeadmConfigPatches:
+  # The dev container reaches the host (and the published API port) via host.containers.internal.
+  - |
+    kind: ClusterConfiguration
+    apiServer:
+      certSANs:
+        - host.containers.internal
 nodes:
   - role: control-plane
   - role: worker

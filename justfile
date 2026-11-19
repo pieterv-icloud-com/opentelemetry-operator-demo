@@ -83,6 +83,9 @@ cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth c
 
     KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
 
+    # 0.0.0.0 resolves to the dev container itself, so point kubectl/helm at the host gateway instead.
+    kubectl config set-cluster "kind-$CLUSTER_NAME" --server="https://host.containers.internal:6443"
+
     just cluster-provider
 
     mkdir -p "$workdir/bootstrap"
