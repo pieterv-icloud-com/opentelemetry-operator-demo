@@ -83,12 +83,6 @@ cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth c
 
     KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-config.yaml --name "$CLUSTER_NAME"
 
-    podman network connect kind "$(hostname)"
-    KIND_EXPERIMENTAL_PROVIDER=podman kind get kubeconfig --internal --name "$CLUSTER_NAME" > "$workdir/kind-internal.yaml"
-    kubeconfig_server="$(kubectl config view --kubeconfig "$workdir/kind-internal.yaml" --minify -o jsonpath='{.clusters[0].cluster.server}')"
-    : "${kubeconfig_server:?Kind did not provide an internal Kubernetes API endpoint}"
-    kubectl config set-cluster "kind-$CLUSTER_NAME" --server="$kubeconfig_server"
-
     just cluster-provider
 
     mkdir -p "$workdir/bootstrap"
@@ -140,7 +134,6 @@ cluster-delete: _cluster-check-podman
     clusters="$(KIND_EXPERIMENTAL_PROVIDER=podman kind get clusters)"
     podman rm --force --ignore "cloud-provider-kind-${CLUSTER_NAME}" >/dev/null
     podman ps -aq --filter "label=io.x-k8s.cloud-provider-kind.cluster=${CLUSTER_NAME}" | xargs -r podman rm --force >/dev/null
-    podman network disconnect kind "$(hostname)" >/dev/null 2>&1 || true
 
     if grep -Fxq "$CLUSTER_NAME" <<< "$clusters"; then
         KIND_EXPERIMENTAL_PROVIDER=podman kind delete cluster --name "$CLUSTER_NAME"
