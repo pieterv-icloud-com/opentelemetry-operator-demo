@@ -43,7 +43,7 @@ These steps can't run from the dev container. Run them on the host, then rebuild
    - The socket is owned by root. Your user needs access, usually through the `podman` group.
    - Check the group owner **on the host** with `ls -l /run/podman/podman.sock`. Add your user with `sudo usermod -aG podman $USER`, then log out and back in.
    - Verify **on the host** with `podman --remote --url unix:///run/podman/podman.sock info`.
-   - Verify **inside the dev container** (after step 4) with `podman --url unix:///var/run/podman-host.sock info`. The socket is bind-mounted there from the host. Without the `info` subcommand, Podman prints its help and fails with `missing command 'podman COMMAND'`.
+   - Verify **inside the dev container** (after step 4) with `podman --remote --url unix:///var/run/podman-host.sock info`. The socket is bind-mounted there from the host. Without the `info` subcommand, Podman prints its help and fails with `missing command 'podman COMMAND'`.
 3. **Set `kernel.kptr_restrict=1` on the host.**
    - Check with `sysctl kernel.kptr_restrict`.
    - Persist it: `echo 'kernel.kptr_restrict=1' | sudo tee /etc/sysctl.d/99-kptr-restrict.conf && sudo sysctl --system`.
@@ -53,21 +53,30 @@ These steps can't run from the dev container. Run them on the host, then rebuild
    - Run `KIND_EXPERIMENTAL_PROVIDER=podman kind get clusters` as your user. A leftover rootless cluster would conflict with the new one.
    - Delete any leftover with `just cluster-delete` before `just cluster-create`.
 
-These steps are not yet verified. If `podman info` reports a rootless store when the socket is rootful, check the `CONTAINER_HOST` value inside the dev container.
+These steps are verified: `podman --remote --url unix:///var/run/podman-host.sock info` reports `Rootless: false` from the dev container, and the cluster came up. If `podman info` reports a rootless store when the socket is rootful, check the `CONTAINER_HOST` value inside the dev container.
 
 ## Todos
 
 - Done: confirm runtime (rootful Podman) and privileges (`privileged: true`).
 - Done: update the Collector privileges.
 - Done: update the README.
+- Done: host Podman changes (steps 1–5) run on the host.
 - Done: confirm the justfile needs no change.
-- Blocked: validate the cluster. This needs the host Podman changes above, then `just cluster-create`. Check `/proc/kallsyms`
-  on a kind node for non-zero `_stext`/`_text`, and check that the profiler logs show no kallsyms error.
+- Done: check `docs/architecture.md` and `AGENTS.md` for rootless Podman references. None found.
+- Done: `just cluster-create` succeeded and ArgoCD synced the applications.
+- Done: validation (plan criteria). On the kind worker node, `/proc/kallsyms` shows non-zero `_stext`/`_text`, and the profiler logs show no kallsyms error.
 - Pending: post the reply on #2122 after approval. Draft: "Thanks, that matches what we see. We've moved the local setup to
-  rootful Podman and set the profiler Collector to `privileged: true`. We'll confirm the kallsyms addresses are non-zero on
-  the kind nodes and report back."
+  rootful Podman and set the profiler Collector to `privileged: true`. On the kind nodes, kallsyms addresses are now non-zero
+  and the kallsyms error is gone."
+- Observed, outside this plan's scope: the profiler pods still crash (CrashLoopBackOff/Error) on the kind workers. The log is
+  `failed to configure tracepoint: reading file "/sys/kernel/tracing/events/syscalls/sys_enter_bpf/id": no such file or directory`,
+  followed by `recursive PID namespace translation requires reading PID namespace level`. The host kernel (7.3.1) has
+  `# CONFIG_FTRACE_SYSCALLS is not set`, so it has no syscall tracepoints. Needs a separate decision. Options, not yet investigated:
+  - Use a kernel with `CONFIG_FTRACE_SYSCALLS=y`. Check whether another kernel or a Bluefin image has it enabled.
+  - Run the profiler without PID namespace translation. This requires a config change to the collector. Not yet checked whether that's possible.
+- Not to be posted until approved: the #2122 reply.
 
 ## Notes
 
 - The reporter's host is Bluefin, kernel 7.3.1, rootless Podman 6.1.4, kind v0.33.0, Kubernetes v1.37.0.
-- Unverified: whether rootful Podman with `kptr_restrict=1` on the host is enough. The cluster test answers this.
+- Answered: rootful Podman with `kptr_restrict=1` on the host is enough for kallsyms addresses to be non-zero on the kind nodes. The profiler still needs syscall tracepoints (see Todos).

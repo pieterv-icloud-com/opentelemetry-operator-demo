@@ -61,7 +61,7 @@ spec:
     receivers:
       profiling:
         samples_per_second: 97
-        pid_namespace_translation_mode: recursive
+        pid_namespace_translation_mode: exact
         # Processes younger than this are skipped: samples taken while a process
         # is still starting (or has already exited) lack reliable /proc metadata,
         # which Pyroscope's OTLP ingestion rejects as malformed (empty label
