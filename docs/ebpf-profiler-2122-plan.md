@@ -65,16 +65,13 @@ These steps are verified: `podman --remote --url unix:///var/run/podman-host.soc
 - Done: check `docs/architecture.md` and `AGENTS.md` for rootless Podman references. None found.
 - Done: `just cluster-create` succeeded and ArgoCD synced the applications.
 - Done: validation (plan criteria). On the kind worker node, `/proc/kallsyms` shows non-zero `_stext`/`_text`, and the profiler logs show no kallsyms error.
-- Pending: post the reply on #2122 after approval. Draft: "Thanks, that matches what we see. We've moved the local setup to
-  rootful Podman and set the profiler Collector to `privileged: true`. On the kind nodes, kallsyms addresses are now non-zero
-  and the kallsyms error is gone."
-- Observed, outside this plan's scope: the profiler pods still crash (CrashLoopBackOff/Error) on the kind workers. The log is
-  `failed to configure tracepoint: reading file "/sys/kernel/tracing/events/syscalls/sys_enter_bpf/id": no such file or directory`,
-  followed by `recursive PID namespace translation requires reading PID namespace level`. The host kernel (7.3.1) has
-  `# CONFIG_FTRACE_SYSCALLS is not set`, so it has no syscall tracepoints. Needs a separate decision. Options, not yet investigated:
-  - Use a kernel with `CONFIG_FTRACE_SYSCALLS=y`. Check whether another kernel or a Bluefin image has it enabled.
-  - Run the profiler without PID namespace translation. This requires a config change to the collector. Not yet checked whether that's possible.
-- Not to be posted until approved: the #2122 reply.
+- Done: posted the reply on #2122 (open-telemetry/opentelemetry-ebpf-profiler#issuecomment-7002332541) after approval.
+- Done: the profiler pods are Running on all three kind workers (`ebpf-profiler-collector-*`, 1/1, "Everything is ready").
+  The earlier CrashLoopBackOff is gone. The remaining log warning is `Failed to attach prctl monitor: ... sys_exit_prctl ... no such file or directory`.
+  It is non-fatal: the tracer and sched monitor still attach. The host kernel (7.3.1) has `# CONFIG_FTRACE_SYSCALLS is not set`,
+  so syscall tracepoints are missing. Optional follow-up: a kernel with `CONFIG_FTRACE_SYSCALLS=y` would enable the prctl monitor.
+  Checked: the profiling receiver has no option to skip the prctl monitor. Upstream logs a warning and continues because core profiling is unaffected
+  (`collector/receiver_linux.go:193-199`). The only effect is that prctl-named mappings (`OTEL_CTX`) are discovered later. No repo change is needed.
 
 ## Notes
 
