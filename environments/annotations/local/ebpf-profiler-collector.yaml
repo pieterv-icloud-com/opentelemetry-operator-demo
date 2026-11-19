@@ -18,8 +18,7 @@ spec:
     feature-gates: +service.profilesSupport
   hostPID: true
   securityContext:
-    capabilities:
-      add: ["SYS_ADMIN", "BPF", "PERFMON"]
+    privileged: true
   resources:
     requests:
       cpu: 100m

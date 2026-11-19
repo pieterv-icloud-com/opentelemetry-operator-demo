@@ -10,23 +10,27 @@ Jaeger.
 
 ## Getting started
 
-This setup uses rootless Podman on the host. Start its API socket before opening
-the Dev Container:
+This setup uses rootful Podman on the host. Kernel symbol addresses are hidden
+from rootless containers, which breaks the eBPF profiler (see
+[opentelemetry-ebpf-profiler#2122](https://github.com/open-telemetry/opentelemetry-ebpf-profiler/issues/2122)).
+Start the system Podman API socket before opening the Dev Container:
 
 ```sh
-systemctl --user enable --now podman.socket
-echo "$XDG_RUNTIME_DIR"
+sudo systemctl enable --now podman.socket
+ls -l /run/podman/podman.sock
 ```
 
-`XDG_RUNTIME_DIR` must be set in the environment launching VS Code. Open this
-repository and choose **Reopen in Container**, or **Rebuild Container** if it is
-already open. The container uses the host Podman service, and the mounted
-socket grants control over the host user's containers. Rootless kind also
-requires the prerequisites in the [kind rootless guide](https://kind.sigs.k8s.io/docs/user/rootless/).
+The Dev Container mounts `/run/podman/podman.sock` from the host. Because the
+socket is owned by root, the host user must be able to access it (for example,
+via the `podman` group, if your distribution sets one up). Open this
+repository
+and choose **Reopen in Container**, or **Rebuild Container** if it is already
+open. The mounted socket grants control over the host's containers.
 
 `cluster-create` ensures `kernel.kptr_restrict=1` is recorded in the dev
 container's `/etc/sysctl.d/99-kptr-restrict.conf`. This does not change the host
-kernel setting; the dev container cannot apply host-level sysctls.
+kernel setting; the dev container cannot apply host-level sysctls. The eBPF
+profiler Collector runs privileged so it can read kernel symbol addresses.
 
 Project tasks are available both as `just` recipes and as VS Code tasks. Run
 them from the terminal with `just <task-name>`, or choose **Terminal > Run
@@ -52,7 +56,7 @@ must be available in the configured Git remote for Argo CD to sync it.
 
 ## Accessing the demo site
 
-Rootless Podman network addresses are not necessarily reachable from the host.
+Podman network addresses are not necessarily reachable from the host.
 After ingress-nginx is deployed, forward its service from the Dev Container:
 
 ```sh

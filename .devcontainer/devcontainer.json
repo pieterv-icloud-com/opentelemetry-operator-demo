@@ -16,7 +16,7 @@
     },
 	"mounts": [
 		"source=${localWorkspaceFolder}/.devcontainer,target=/commandhistory,type=bind,consistency=cached",
-		"source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/podman-host.sock,type=bind",
+		"source=/run/podman/podman.sock,target=/var/run/podman-host.sock,type=bind",
 		// Use tmpfs for /tmp - ensures fresh permissions on each container start
 		"type=tmpfs,destination=/tmp,tmpfs-mode=1777"
 	],
@@ -24,7 +24,7 @@
         "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
         "GRAFANA_URL": "http://localhost:3000",
         "CONTAINER_HOST": "unix:///var/run/podman-host.sock",
-        "PODMAN_HOST_SOCKET": "${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock"
+        "PODMAN_HOST_SOCKET": "/run/podman/podman.sock"
     },
     "containerUser": "vscode",
     "remoteUser": "vscode",
