@@ -65,7 +65,7 @@ These steps are verified: `podman --remote --url unix:///var/run/podman-host.soc
 - Done: check `docs/architecture.md` and `AGENTS.md` for rootless Podman references. None found.
 - Done: `just cluster-create` succeeded and ArgoCD synced the applications.
 - Done: validation (plan criteria). On the kind worker node, `/proc/kallsyms` shows non-zero `_stext`/`_text`, and the profiler logs show no kallsyms error.
-- Done: posted the reply on #2122 (open-telemetry/opentelemetry-ebpf-profiler#issuecomment-7002332541) after approval.
+- Done: closed open-telemetry/opentelemetry-ebpf-profiler#2122 as completed.
 - Done: the profiler pods are Running on all three kind workers (`ebpf-profiler-collector-*`, 1/1, "Everything is ready").
   The earlier CrashLoopBackOff is gone. The remaining log warning is `Failed to attach prctl monitor: ... sys_exit_prctl ... no such file or directory`.
   It is non-fatal: the tracer and sched monitor still attach. The host kernel (7.3.1) has `# CONFIG_FTRACE_SYSCALLS is not set`,
