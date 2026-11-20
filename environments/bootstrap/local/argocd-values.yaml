@@ -1,3 +1,7 @@
+global:
+  networkPolicy:
+    # kindnet's network-policy enforcement drops traffic from hostNetwork pods (node IPs), breaking Redis and API access
+    create: false
 configs:
   params:
     server.insecure: "true"
