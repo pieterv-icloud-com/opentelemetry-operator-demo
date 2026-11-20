@@ -94,7 +94,7 @@ cluster-create: _cluster-check-podman _cluster-configure-kptr-restrict gh-auth c
     just _replace-tokens "$workdir/bootstrap"
 
     # Don't block on Helm readiness: a slow Redis HA rollout would otherwise skip the bootstrap below.
-    helm install argocd --create-namespace --version 10.17.2 --namespace argocd --hide-notes -f argocd-values.yaml argo/argo-cd
+    helm install argocd --create-namespace --version 10.17.2 --namespace argocd --hide-notes -f environments/bootstrap/local/argocd-values.yaml argo/argo-cd
 
     kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=120s
     kubectl apply -k "$workdir/bootstrap"
